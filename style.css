@@ -1,0 +1,144 @@
+/* Basic Reset and Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #282c34; /* Dark background */
+    color: #e0e0e0; /* Light text color */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top, not center vertically */
+    min-height: 100vh; /* Minimum height of the viewport */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+/* Game Container Styling */
+.game-container {
+    background-color: #3a3f47;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 600px; /* Max width for desktop */
+    width: 100%; /* Full width on smaller screens */
+    margin-top: 20px; /* Space from the top */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between sections */
+}
+
+h1 {
+    color: #61dafb; /* A vibrant blue for the title */
+    margin-bottom: 20px;
+}
+
+/* Stats Display Styling */
+.stats-display {
+    background-color: #4a4f58;
+    border-radius: 5px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for stats */
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stats-display p {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.stats-display span {
+    color: #a0ff80; /* A soft green for stat values */
+    font-weight: normal;
+}
+
+/* Button Styling */
+button {
+    background-color: #007bff; /* Blue button */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 100%; /* Make buttons full width in their container */
+    box-sizing: border-box; /* Include padding/border in width */
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Action Buttons Container */
+.action-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 20px;
+}
+
+/* Event Display Styling (hidden by default, shown by JS) */
+.event-display {
+    background-color: #5a626c;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    text-align: left; /* Align event text to the left */
+}
+
+.event-display h2 {
+    color: #ffda61; /* Yellow for event title */
+    margin-top: 0;
+}
+
+.event-display p {
+    font-size: 1.05em;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+#eventChoices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .game-container {
+        padding: 15px;
+        margin-top: 10px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    .stats-display {
+        grid-template-columns: 1fr; /* Stack stats on small screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-display p {
+        font-size: 1em;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 1em;
+    }
+}

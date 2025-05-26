@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpinLife - Your Life Simulation Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>SpinLife</h1>
+
+        <div class="stats-display">
+            <p>Age: <span id="ageDisplay">0</span></p>
+            <p>Happiness: <span id="happinessStat">100</span></p>
+            <p>Health: <span id="healthStat">100</span></p>
+            <p>Smarts: <span id="smartsStat">50</span></p>
+            <p>Money: $<span id="moneyStat">0</span></p>
+        </div>
+
+        <div class="action-buttons">
+            <button id="advanceTimeButton">Next Month</button>
+            </div>
+
+        <div class="event-display" style="display: none;">
+            <h2 id="eventTitle"></h2>
+            <p id="eventDescription"></p>
+            <div id="eventChoices">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

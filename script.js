@@ -257,25 +257,26 @@ function endGame(cause) {
 
     // Dynamically create and display the end-of-life summary
     eventTitle.textContent = "Life Ended!";
+    // CORRECTED: Using ${variable} for embedding variables in template literals
     eventDescription.innerHTML = `
-        <p><span class="math-inline">\{cause\}</p\>
-        <p>You reached the age of **{player.age}**.</p>
-<p>Final Stats:</p>
-<ul>
-<li>Happiness: ${player.happiness}</li>
-<li>Health: ${player.health}</li>
-<li>Smarts: ${player.smarts}</li>
-<li>Money: $${player.money}</li>
-</ul>
-<p>Click "New Life" to spin again!</p>
-`;
-// Add a "New Life" button to restart the game
-const newLifeButton = document.createElement('button');
-newLifeButton.textContent = "New Life";
-newLifeButton.classList.add('new-game-button'); // Add class for styling
-newLifeButton.onclick = initializeGame; // Restarts the game when clicked
-eventChoices.appendChild(newLifeButton);
-showEventDisplay(); // Show the end-of-life summary
+        <p>${cause}</p>
+        <p>You reached the age of **${player.age}**.</p>
+        <p>Final Stats:</p>
+        <ul>
+            <li>Happiness: ${player.happiness}</li>
+            <li>Health: ${player.health}</li>
+            <li>Smarts: ${player.smarts}</li>
+            <li>Money: $${player.money}</li>
+        </ul>
+        <p>Click "New Life" to spin again!</p>
+    `;
+    // Add a "New Life" button to restart the game
+    const newLifeButton = document.createElement('button');
+    newLifeButton.textContent = "New Life";
+    newLifeButton.classList.add('new-game-button'); // Add class for styling
+    newLifeButton.onclick = initializeGame; // Restarts the game when clicked
+    eventChoices.appendChild(newLifeButton);
+    showEventDisplay(); // Show the end-of-life summary
 }
 // --- Event Data (Same as before, but note event conditions will be added later) ---
 const gameEvents = [

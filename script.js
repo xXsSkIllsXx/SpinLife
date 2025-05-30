@@ -411,4 +411,3 @@ workButton.addEventListener('click', () => handleAction('work'));
 // --- Initial Game Setup ---
 // Call this function once when the page loads to set up the game
 initializeGame();
-```

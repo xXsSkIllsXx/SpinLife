@@ -257,6 +257,7 @@ function endGame(cause) {
 
     // Dynamically create and display the end-of-life summary
     eventTitle.textContent = "Life Ended!";
+    // THIS IS THE CRUCIAL PART - CORRECT SYNTAX for ${variable}
     eventDescription.innerHTML = `
         <p><span class="math-inline">\{cause\}</p\>
         <p>You reached the age of **{player.age}**.</p>

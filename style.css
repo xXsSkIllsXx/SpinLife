@@ -1,149 +1,244 @@
-/* Basic Reset and Global Styles */
+/* Google Fonts Import (Fredoka for headings, Nunito for body) */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..900;1,200..900&display=swap');
+
 :root {
-    /* Define color palette */
-    --dark-bg: #1c1c1f; /* Deeper dark background */
-    --darker-bg: #28282c; /* Slightly lighter dark for containers */
-    --card-bg: #323236; /* Background for main sections */
-    --text-light: #e0e0e0; /* Default light text */
-    --text-accent: #61dafb; /* Vibrant blue for accents/titles */
-    --text-success: #7FFF00; /* Chartreuse Green for success */
-    --text-warning: #FFD700; /* Gold for warning/average */
-    --text-danger: #FF4500; /* OrangeRed for danger/hard */
-    --button-primary: #007bff; /* Standard blue button */
-    --button-hover: #0056b3;
-    --button-secondary: #6c757d; /* Grey button for choices */
-    --button-secondary-hover: #5a6268;
-    --shadow-dark: rgba(0, 0, 0, 0.4);
-    --shadow-light: rgba(255, 255, 255, 0.05);
+    /* Core Colors for a cute dark theme */
+    --bg-color: #2c2c3e; /* Dark purple-grey */
+    --card-bg-color: #3a3a50; /* Slightly lighter purple-grey for panels */
+    --text-color-primary: #e0e0e0; /* Light grey for main text */
+    --text-color-secondary: #b0b0b0; /* Slightly darker grey for less emphasis */
+    --accent-color-blue: #4a90e2; /* Vibrant blue for active elements/buttons */
+    --accent-color-blue-dark: #3a7bd5; /* Darker blue for hover states */
+    --border-color: rgba(255, 255, 255, 0.1); /* Subtle white border */
+    --box-shadow-color: rgba(0, 0, 0, 0.3);
+
+    /* Success/Warning/Danger for messages, using CSS variables */
+    --text-success: #78e08f; /* Softer green */
+    --text-warning: #f7cd2e; /* Warm yellow */
+    --text-danger: #ff6b6b; /* Softer red */
+
+    /* Button specific colors */
+    --button-disabled-bg: #5a5a70;
+    --button-disabled-text: #999999;
 }
 
 body {
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; /* Modern font stack */
-    margin: 0;
-    padding: 0;
-    background-color: var(--dark-bg); /* Use defined dark background */
-    color: var(--text-light); /* Use defined light text color */
+    font-family: 'Nunito', sans-serif; /* Body text font */
+    background-color: var(--bg-color);
+    color: var(--text-color-primary);
     display: flex;
     justify-content: center;
-    align-items: center; /* Center content vertically */
-    min-height: 100vh; /* Full viewport height */
-    box-sizing: border-box; /* Include padding in element's total size */
-    overflow-y: auto; /* Allow scrolling if content is long */
-    padding: 20px 10px; /* Padding for small screens */
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: auto; /* Allow scrolling if content is too tall */
+    line-height: 1.6;
 }
 
-/* Game Container Styling */
 .game-container {
-    background-color: var(--darker-bg);
-    border-radius: 12px; /* Softer rounded corners */
+    background-color: var(--card-bg-color);
+    border-radius: 20px; /* More rounded corners */
+    box-shadow: 0 10px 30px var(--box-shadow-color);
     padding: 30px;
-    box-shadow: 0 8px 20px var(--shadow-dark), 0 0 0 1px var(--shadow-light); /* Deeper shadow with subtle light border */
-    text-align: center;
-    max-width: 700px; /* Slightly wider for better layout */
     width: 100%;
-    margin: 20px auto; /* Auto margin for centering and spacing */
-    display: flex;
-    flex-direction: column;
-    gap: 25px; /* More generous spacing between sections */
-    animation: fadeIn 0.8s ease-out forwards; /* Fade in animation */
-    opacity: 0; /* Start invisible for animation */
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    max-width: 600px; /* Increased max-width slightly */
+    box-sizing: border-box;
+    text-align: center;
+    margin: 20px; /* Add margin for smaller screens */
 }
 
 h1 {
-    color: var(--text-accent); /* Vibrant blue for the title */
+    font-family: 'Fredoka', sans-serif; /* Heading font */
+    color: var(--accent-color-blue); /* Title color */
+    font-size: 3em; /* Larger title */
     margin-bottom: 25px;
-    font-size: 2.8em; /* Larger title */
-    letter-spacing: 1.5px;
-    text-shadow: 2px 2px 5px var(--shadow-dark); /* Subtle shadow for title */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-h2 {
-    color: var(--text-accent); /* Use accent color for section headings */
-    margin-top: 0;
-    margin-bottom: 15px;
-    border-bottom: 1px solid var(--card-bg); /* Subtle separator */
-    padding-bottom: 10px;
-    font-size: 1.6em;
-}
-
-/* Stats Display Styling */
-.stats-display {
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 20px;
+/* --- Stats Display --- */
+.stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* More room for stats */
-    gap: 15px;
-    margin-bottom: 20px; /* Space before actions */
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2); /* Inner glow effect */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid for stats */
+    gap: 15px; /* Spacing between stat items */
+    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker background for the stats block */
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
 }
 
-.stats-display p {
-    margin: 0;
-    font-size: 1.15em; /* Slightly larger stat text */
-    font-weight: 500; /* Medium font weight */
-    display: flex; /* Enables flexbox */
-    justify-content: space-between; /* Pushes the first item (text) to the start and the second (value) to the end */
-    align-items: center; /* Vertically centers items if they have different heights */
-    padding: 5px 0; /* Add a little vertical padding for breathing room */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator line */
-}
-
-/* Remove border-bottom from the last stat for a cleaner look */
-.stats-display p:last-child {
-    border-bottom: none;
-}
-
-.stats-display span {
-    color: var(--text-success); /* Use success green for stat values */
-    font-weight: bold; /* Make values bolder */
-    font-size: 1.2em; /* Emphasize values */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Shadow for readability */
-}
-
-/* Action Buttons Container */
-.action-buttons {
+.stat-item {
     display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    gap: 12px; /* Space between buttons */
-    margin-bottom: 25px; /* Space before advance time */
+    flex-direction: column; /* Stack label and value */
+    align-items: center;
+    justify-content: center; /* Center content vertically and horizontally */
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.1); /* Even darker background for individual stat boxes */
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Button Styling - General */
-button {
-    background-color: var(--button-primary); /* Primary blue */
-    color: white;
-    padding: 14px 25px; /* More padding for larger touch targets */
-    border: none;
-    border-radius: 8px; /* Softer rounded corners */
-    cursor: pointer;
-    font-size: 1.15em;
-    font-weight: bold;
+.stat-item:hover {
+    transform: translateY(-3px); /* Subtle lift on hover */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stat-label {
+    font-size: 0.9em; /* Smaller, clearer label */
+    color: var(--text-color-secondary);
+    margin-bottom: 5px; /* Space between label and value */
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    width: 100%;
-    box-sizing: border-box;
-    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
-button:hover:not(:disabled) {
-    background-color: var(--button-hover);
-    transform: translateY(-3px); /* More pronounced lift */
-    box-shadow: 0 6px 15px var(--shadow-dark);
+.stat-value {
+    font-size: 1.6em; /* Larger, prominent value */
+    font-weight: bold;
+    color: var(--text-color-primary); /* Default for most stats */
 }
 
-button:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px var(--shadow-dark);
+/* Specific colors for certain stats for quick visual cues */
+#happinessStat, #healthStat {
+    color: var(--text-success); /* Green for positive stats */
 }
 
-button:disabled {
-    background-color: #555; /* Darker disabled color */
+#moneyStat {
+    color: var(--text-warning); /* Yellow for money */
+}
+
+/* --- Buttons --- */
+.main-button,
+.action-button,
+.event-choice-button,
+.event-continue-button,
+.new-game-button {
+    background-color: var(--accent-color-blue);
+    color: white;
+    border: none;
+    border-radius: 10px; /* More rounded buttons */
+    padding: 15px 25px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    width: 100%; /* Full width buttons */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    margin-bottom: 15px; /* Space between buttons */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.main-button:hover,
+.action-button:hover,
+.event-choice-button:hover,
+.event-continue-button:hover,
+.new-game-button:hover:not(:disabled) {
+    background-color: var(--accent-color-blue-dark);
+    transform: translateY(-2px); /* Subtle lift effect */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.main-button:active,
+.action-button:active,
+.event-choice-button:active,
+.event-continue-button:active,
+.new-game-button:active:not(:disabled) {
+    transform: translateY(0); /* Press down effect */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.main-button:disabled,
+.action-button:disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
     cursor: not-allowed;
     box-shadow: none;
+    transform: none;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column; /* Stack action buttons */
+    gap: 15px; /* Space between action buttons */
+    margin-bottom: 25px; /* Space below action buttons */
+}
+
+/* Specific styles for event choice buttons and continue button */
+.event-choice-button,
+.event-continue-button,
+.new-game-button {
+    margin-top: 10px; /* Space above choice buttons */
+}
+
+/* Success/Warning/Danger text inside event choice buttons */
+.event-choice-button span {
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Adds contrast */
+}
+
+/* --- Event Display --- */
+.event-display {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-out; /* Smooth fade-in */
+}
+
+.event-display h2 {
+    font-family: 'Fredoka', sans-serif;
+    color: var(--accent-color-blue);
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.event-display p {
+    color: var(--text-color-primary);
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.event-display ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.event-display ul li {
+    margin-bottom: 5px;
+    color: var(--text-color-secondary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .game-container {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
+
+    .main-button,
+    .action-button,
+    .event-choice-button,
+    .event-continue-button,
+    .new-game-button {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr; /* Stack stats on very small screens */
+    }
+}

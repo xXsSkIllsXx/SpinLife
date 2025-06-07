@@ -2,108 +2,132 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..900;1,200..900&display=swap');
 
 :root {
-    /* Core Colors for a cute dark theme */
-    --bg-color: #2c2c3e; /* Dark purple-grey */
-    --card-bg-color: #3a3a50; /* Slightly lighter purple-grey for panels */
-    --text-color-primary: #e0e0e0; /* Light grey for main text */
-    --text-color-secondary: #b0b0b0; /* Slightly darker grey for less emphasis */
-    --accent-color-blue: #4a90e2; /* Vibrant blue for active elements/buttons */
-    --accent-color-blue-dark: #3a7bd5; /* Darker blue for hover states */
-    --border-color: rgba(255, 255, 255, 0.1); /* Subtle white border */
-    --box-shadow-color: rgba(0, 0, 0, 0.3);
+    /* Core Colors for a cute, soft dark theme */
+    --bg-color-dark: #2a2c42; /* Deeper, rich dark blue/purple */
+    --bg-color-light: #3a3d54; /* Slightly lighter for elements */
+    --card-bg-color: #4a4d6b; /* Main card background, soft muted purple */
+    --border-color: rgba(255, 255, 255, 0.08); /* Subtle white border */
 
-    /* Success/Warning/Danger for messages, using CSS variables */
-    --text-success: #78e08f; /* Softer green */
-    --text-warning: #f7cd2e; /* Warm yellow */
-    --text-danger: #ff6b6b; /* Softer red */
+    --text-color-primary: #f0f0f5; /* Off-white for main text */
+    --text-color-secondary: #c0c0d0; /* Muted light purple for labels/less important text */
 
-    /* Button specific colors */
-    --button-disabled-bg: #5a5a70;
-    --button-disabled-text: #999999;
+    /* Accent Colors - More vibrant and "cute" */
+    --accent-blue: #7ddaff; /* Brighter, friendly blue for main buttons/title */
+    --accent-blue-dark: #5cb3e6; /* Darker blue for hover states */
+    --accent-green: #90ee90; /* Light green for health/happiness */
+    --accent-yellow: #f8e58c; /* Soft yellow for money */
+    --accent-red: #ff9999; /* Soft red for danger */
+    --accent-orange: #ffbb77; /* Soft orange for warning */
+
+    /* Shadows and Glows for depth */
+    --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.4);
+    --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    --glow-soft: 0 0 15px rgba(125, 218, 255, 0.4); /* Blue glow */
+
+    /* Button specific */
+    --button-disabled-bg: #6a6e8a;
+    --button-disabled-text: #a0a0b0;
 }
 
 body {
     font-family: 'Nunito', sans-serif; /* Body text font */
-    background-color: var(--bg-color);
+    background: linear-gradient(135deg, var(--bg-color-dark) 0%, var(--bg-color-light) 100%); /* Subtle gradient background */
     color: var(--text-color-primary);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    overflow: auto; /* Allow scrolling if content is too tall */
+    overflow-x: hidden; /* Prevent horizontal scroll */
     line-height: 1.6;
+    padding: 20px; /* Overall padding for smaller screens */
+    box-sizing: border-box;
 }
 
 .game-container {
     background-color: var(--card-bg-color);
-    border-radius: 20px; /* More rounded corners */
-    box-shadow: 0 10px 30px var(--box-shadow-color);
-    padding: 30px;
+    border-radius: 30px; /* Very rounded corners for a soft look */
+    box-shadow: var(--shadow-soft);
+    padding: 40px; /* Increased padding */
     width: 100%;
-    max-width: 600px; /* Increased max-width slightly */
+    max-width: 650px; /* Increased max-width for more space */
     box-sizing: border-box;
     text-align: center;
-    margin: 20px; /* Add margin for smaller screens */
+    margin: auto; /* Center it */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
     font-family: 'Fredoka', sans-serif; /* Heading font */
-    color: var(--accent-color-blue); /* Title color */
-    font-size: 3em; /* Larger title */
-    margin-bottom: 25px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    color: var(--accent-blue); /* Title color */
+    font-size: 3.8em; /* Much larger title */
+    margin-bottom: 30px;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); /* Softer shadow */
+    letter-spacing: 1px;
 }
 
-/* --- Stats Display --- */
+/* --- Stats Display (Guaranteed Vertical Layout) --- */
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid for stats */
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack items vertically, guaranteeing each stat is on its own line */
     gap: 15px; /* Spacing between stat items */
-    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker background for the stats block */
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 30px;
+    background-color: var(--bg-color-dark); /* Darker background for the stats block */
+    border-radius: 20px; /* Rounded corners */
+    padding: 25px; /* Increased padding */
+    margin-bottom: 35px;
     border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-inset); /* Inner shadow for depth */
+    width: 100%; /* Take full width of container */
+    box-sizing: border-box;
 }
 
 .stat-item {
     display: flex;
-    flex-direction: column; /* Stack label and value */
+    justify-content: space-between; /* Pushes label to left, value to right */
     align-items: center;
-    justify-content: center; /* Center content vertically and horizontally */
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.1); /* Even darker background for individual stat boxes */
-    border-radius: 10px;
+    padding: 12px 20px; /* More padding for a bubble-like feel */
+    background-color: var(--bg-color-light); /* Slightly lighter background for each stat */
+    border-radius: 15px; /* Rounded pill shape */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle border */
 }
 
 .stat-item:hover {
-    transform: translateY(-3px); /* Subtle lift on hover */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px) scale(1.01); /* Subtle lift and grow */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), var(--glow-soft); /* Add glow on hover */
 }
 
 .stat-label {
-    font-size: 0.9em; /* Smaller, clearer label */
+    font-size: 1em; /* Clear label size */
     color: var(--text-color-secondary);
-    margin-bottom: 5px; /* Space between label and value */
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    font-weight: 600; /* Bolder label */
 }
 
 .stat-value {
-    font-size: 1.6em; /* Larger, prominent value */
+    font-family: 'Fredoka', sans-serif; /* Use Fredoka for values too! */
+    font-size: 1.8em; /* Larger, more prominent value */
     font-weight: bold;
-    color: var(--text-color-primary); /* Default for most stats */
+    color: var(--text-color-primary);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 
 /* Specific colors for certain stats for quick visual cues */
 #happinessStat, #healthStat {
-    color: var(--text-success); /* Green for positive stats */
+    color: var(--accent-green);
 }
 
 #moneyStat {
-    color: var(--text-warning); /* Yellow for money */
+    color: var(--accent-yellow);
+}
+/* Add the $ before money stat */
+#moneyStat::before {
+    content: "$";
+    margin-right: 2px;
 }
 
 /* --- Buttons --- */
@@ -112,19 +136,20 @@ h1 {
 .event-choice-button,
 .event-continue-button,
 .new-game-button {
-    background-color: var(--accent-color-blue);
+    background-color: var(--accent-blue);
     color: white;
     border: none;
-    border-radius: 10px; /* More rounded buttons */
-    padding: 15px 25px;
-    font-size: 1.2em;
+    border-radius: 15px; /* Super rounded buttons for bubble feel */
+    padding: 18px 30px; /* Larger hit area */
+    font-size: 1.3em; /* Larger text */
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     width: 100%; /* Full width buttons */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    margin-bottom: 15px; /* Space between buttons */
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    margin-bottom: 18px; /* More space between buttons */
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .main-button:hover,
@@ -132,9 +157,10 @@ h1 {
 .event-choice-button:hover,
 .event-continue-button:hover,
 .new-game-button:hover:not(:disabled) {
-    background-color: var(--accent-color-blue-dark);
-    transform: translateY(-2px); /* Subtle lift effect */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    background-color: var(--accent-blue-dark);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), var(--glow-soft); /* Stronger shadow + glow */
+    filter: brightness(1.1); /* Slightly brighter on hover */
 }
 
 .main-button:active,
@@ -143,7 +169,8 @@ h1 {
 .event-continue-button:active,
 .new-game-button:active:not(:disabled) {
     transform: translateY(0); /* Press down effect */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Reset shadow */
+    filter: brightness(0.9); /* Slightly darker on press */
 }
 
 .main-button:disabled,
@@ -153,6 +180,8 @@ h1 {
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
+    opacity: 0.8; /* Dim disabled buttons */
+    text-shadow: none;
 }
 
 .action-buttons {
@@ -160,44 +189,47 @@ h1 {
     flex-direction: column; /* Stack action buttons */
     gap: 15px; /* Space between action buttons */
     margin-bottom: 25px; /* Space below action buttons */
+    width: 100%;
 }
 
 /* Specific styles for event choice buttons and continue button */
 .event-choice-button,
 .event-continue-button,
 .new-game-button {
-    margin-top: 10px; /* Space above choice buttons */
+    margin-top: 15px; /* More space above choice buttons */
+    background-color: var(--accent-blue); /* Default for choices, will be overridden by JS colors */
 }
 
-/* Success/Warning/Danger text inside event choice buttons */
+/* Event choice button percentage text (using new specific colors) */
 .event-choice-button span {
     font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Adds contrast */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Adds contrast for readability */
 }
 
 /* --- Event Display --- */
 .event-display {
     background-color: var(--card-bg-color);
     border: 1px solid var(--border-color);
-    border-radius: 15px;
-    padding: 25px;
-    margin-top: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.5s ease-out; /* Smooth fade-in */
+    border-radius: 20px; /* Softened corners */
+    padding: 30px; /* Increased padding */
+    margin-top: 35px;
+    box-shadow: var(--shadow-soft);
+    animation: fadeIn 0.6s ease-out; /* Slightly longer fade-in */
 }
 
 .event-display h2 {
     font-family: 'Fredoka', sans-serif;
-    color: var(--accent-color-blue);
-    font-size: 1.8em;
+    color: var(--accent-blue);
+    font-size: 2.2em; /* Larger event title */
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .event-display p {
     color: var(--text-color-primary);
-    font-size: 1.1em;
-    margin-bottom: 20px;
+    font-size: 1.15em; /* Slightly larger text */
+    margin-bottom: 25px;
 }
 
 .event-display ul {
@@ -208,25 +240,40 @@ h1 {
 }
 
 .event-display ul li {
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* More space between list items */
     color: var(--text-color-secondary);
+    font-size: 1em;
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(20px); } /* More pronounced starting point */
     to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .game-container {
-        padding: 20px;
+        padding: 25px;
         margin: 10px;
+        border-radius: 25px;
     }
 
     h1 {
-        font-size: 2.5em;
+        font-size: 3em;
+        margin-bottom: 20px;
+    }
+
+    .stat-item {
+        padding: 10px 15px;
+    }
+
+    .stat-label {
+        font-size: 0.9em;
+    }
+
+    .stat-value {
+        font-size: 1.5em;
     }
 
     .main-button,
@@ -234,11 +281,23 @@ h1 {
     .event-choice-button,
     .event-continue-button,
     .new-game-button {
-        padding: 12px 20px;
-        font-size: 1em;
+        padding: 15px 20px;
+        font-size: 1.1em;
+        margin-bottom: 12px;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr; /* Stack stats on very small screens */
+    .event-display {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .event-display h2 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+
+    .event-display p {
+        font-size: 1em;
+        margin-bottom: 20px;
     }
 }

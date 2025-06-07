@@ -482,8 +482,8 @@ event.choices.forEach(choice => {
     let choiceText = choice.text;
     if (choice.statCheck) {
         const { percentage, color } = calculateSuccessChance(choice.statCheck, choice.difficulty);
-        // Append the percentage and color it
-        choiceText += ` <span style="color: <span class="math-inline">\{color\}; font\-weight\: bold;"\>\(</span>{percentage}%)</span>`;
+        // Corrected: Using ${variable} syntax inside the style attribute
+        choiceText += ` <span style="color: ${color}; font-weight: bold;">(${percentage}%)</span>`;
     }
     choiceButton.innerHTML = choiceText; // Use innerHTML to render the span correctly
 
@@ -512,7 +512,7 @@ event.choices.forEach(choice => {
                 outcomeMessage = choice.failureText || "You failed!";
             }
 
-            // --- CRUCIAL CHANGE: SIMPLIFY Outcome Message ---
+            // SIMPLIFIED Outcome Message
             eventTitle.textContent = `${event.title} - Outcome`; // Update title
             eventDescription.innerHTML = `
                 <p>${outcomeMessage}</p>

@@ -34,43 +34,74 @@ body {
     background: linear-gradient(135deg, var(--bg-color-dark) 0%, var(--bg-color-light) 100%);
     color: var(--text-color-primary);
     display: flex;
-    /* Removed justify-content: center and align-items: center from body */
+    justify-content: center; /* Center game-container horizontally */
+    align-items: center; /* Center game-container vertically */
     min-height: 100vh;
     margin: 0;
-    overflow-x: hidden;
+    overflow: hidden; /* Prevent ALL scrolling (vertical and horizontal) */
     line-height: 1.6;
-    padding: 20px;
+    padding: 15px; /* Slightly less padding to maximize content area */
     box-sizing: border-box;
-    /* New: Make body a flex container for the game-container to fill space */
-    flex-direction: column; /* Allow content to flow top-down */
-    align-items: center; /* Center horizontally if content doesn't fill width */
 }
 
 .game-container {
     background-color: var(--card-bg-color);
-    border-radius: 30px;
+    border-radius: 30px; /* Very rounded corners for a soft look */
     box-shadow: var(--shadow-soft);
-    padding: 40px;
-    width: 90%; /* Use 90% of the viewport width */
-    max-width: 1000px; /* Allow it to grow much wider */
+    padding: 30px; /* Adjust padding for inner content */
+    width: 95%; /* Use almost full width */
+    max-width: 1200px; /* Allow it to grow even wider on large screens */
     box-sizing: border-box;
     text-align: center;
-    margin: auto; /* Center it */
-    display: flex; /* Keep flex for internal arrangement */
-    flex-direction: column;
-    align-items: center; /* Keep content centered within the container */
-    min-height: calc(100vh - 40px); /* Ensure it takes up most of the screen height if content is short */
-    justify-content: space-between; /* Distribute space vertically */
+
+    /* Make game-container itself a grid to arrange title and wrapper */
+    display: grid;
+    grid-template-rows: auto 1fr; /* Title row, then content row */
+    gap: 25px; /* Space between title and main content */
+
+    /* Ensure it always fits the screen height */
+    min-height: calc(100vh - 30px); /* 30px accounts for padding on body */
+    max-height: calc(100vh - 30px); /* Strictly limit height to prevent scrolling */
 }
 
 h1 {
     font-family: 'Fredoka', sans-serif; /* Heading font */
     color: var(--accent-blue); /* Title color */
     font-size: 3.8em; /* Much larger title */
-    margin-bottom: 30px;
+    margin-bottom: 0; /* Managed by gap in game-container grid */
     text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); /* Softer shadow */
     letter-spacing: 1px;
 }
+
+/* NEW: Wrapper for the two-column layout */
+.game-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns for stats and actions */
+    gap: 30px; /* Space between the two columns */
+    width: 100%; /* Ensure it spans the full width of its parent */
+    height: 100%; /* Take full height of its parent (the 1fr row in game-container) */
+    align-items: start; /* Align content to the top of each column */
+    overflow: hidden; /* Crucial: hide any overflow *within* the wrapper */
+}
+
+/* NEW: Left and Right Panels */
+.left-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full height of their respective grid cells */
+    box-sizing: border-box;
+    overflow: hidden; /* Hide overflow within panels */
+}
+
+.left-panel {
+    justify-content: start; /* Align stats to the top */
+}
+
+.right-panel {
+    justify-content: space-between; /* Push action buttons to top, advance button to bottom */
+    padding-top: 10px; /* Small adjustment for visual balance with stats */
+}
+
 
 /* --- Stats Display (Guaranteed Vertical Layout) --- */
 .stats-grid {
@@ -80,11 +111,14 @@ h1 {
     background-color: var(--bg-color-dark);
     border-radius: 20px;
     padding: 25px;
-    margin-bottom: 35px;
+    /* margin-bottom: 35px; -- REMOVED: Handled by left-panel's flex distribution */
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-inset);
     width: 100%; /* Important: Make sure this takes full width of its parent (.game-container) */
     box-sizing: border-box;
+    /* NEW: Allow internal scrolling if stats grow too much */
+    overflow-y: auto; /* Enable vertical scrolling only WITHIN the stats grid */
+    max-height: 100%; /* Ensure it respects its parent's height */
 }
 
 .stat-item {
@@ -151,7 +185,7 @@ h1 {
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     width: 100%; /* Full width buttons */
     box-sizing: border-box;
-    margin-bottom: 18px; /* More space between buttons */
+    margin-bottom: 0; /* IMPORTANT: Removed fixed margin-bottom here */
     text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -192,7 +226,7 @@ h1 {
     display: flex;
     flex-direction: column; /* Stack action buttons */
     gap: 15px; /* Space between action buttons */
-    margin-bottom: 25px; /* Space below action buttons */
+    /* margin-bottom: 25px; -- REMOVED: Handled by right-panel's flex distribution */
     width: 100%;
 }
 
@@ -200,25 +234,45 @@ h1 {
 .event-choice-button,
 .event-continue-button,
 .new-game-button {
-    margin-top: 15px; /* More space above choice buttons */
+    margin-top: 15px; /* More space above choice buttons for visual separation */
     background-color: var(--accent-blue); /* Default for choices, will be overridden by JS colors */
 }
 
 /* Event choice button percentage text (using new specific colors) */
+/* This rule might not be needed if percentage text is removed from JS */
 .event-choice-button span {
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Adds contrast for readability */
 }
 
-/* --- Event Display --- */
+/* --- Event Display (Full Screen Overlay) --- */
 .event-display {
-    background-color: var(--card-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 20px; /* Softened corners */
-    padding: 30px; /* Increased padding */
-    margin-top: 35px;
-    box-shadow: var(--shadow-soft);
+    position: absolute; /* Position relative to body/viewport */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Take full viewport width */
+    height: 100vh; /* Take full viewport height */
+    display: flex; /* Use flex to center content */
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    background-color: rgba(42, 44, 66, 0.95); /* Darker, slightly transparent overlay */
+    z-index: 1000; /* Ensure it's on top */
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in width/height */
     animation: fadeIn 0.6s ease-out; /* Slightly longer fade-in */
+
+    /* Styles for the event card itself within the overlay */
+    .event-card { /* Wrap the event content in a card-like element */
+        background-color: var(--card-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-soft);
+        max-width: 600px; /* Limit width of the event card */
+        width: 90%; /* Responsive width */
+        text-align: center;
+    }
 }
 
 .event-display h2 {
@@ -256,28 +310,40 @@ h1 {
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 800px) { /* Changed breakpoint from 600px to 800px for layout change */
+    .game-content-wrapper {
+        grid-template-columns: 1fr; /* Stack panels vertically on smaller screens */
+        gap: 25px; /* Space between stacked panels */
+        height: auto; /* Allow wrapper to grow naturally */
+        overflow-y: auto; /* Allow wrapper itself to scroll on small screens */
+        padding-bottom: 20px; /* Add padding at bottom if scrollable */
+    }
+
     .game-container {
-        padding: 25px;
-        margin: 10px;
-        border-radius: 25px;
+        padding: 20px;
+        min-height: auto; /* Let height adjust for stacked content */
+        max-height: calc(100vh - 30px); /* Still limit max height */
+        overflow-y: auto; /* Allow game-container to scroll if stacked content is too tall */
+        gap: 20px;
+    }
+
+    .left-panel, .right-panel {
+        height: auto; /* Let height adjust to content */
+        padding-top: 0;
     }
 
     h1 {
         font-size: 3em;
-        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 15px;
     }
 
-    .stat-item {
-        padding: 10px 15px;
-    }
-
-    .stat-label {
-        font-size: 0.9em;
-    }
-
-    .stat-value {
-        font-size: 1.5em;
+    h1 {
+        font-size: 2.5em;
     }
 
     .main-button,
@@ -285,23 +351,19 @@ h1 {
     .event-choice-button,
     .event-continue-button,
     .new-game-button {
-        padding: 15px 20px;
-        font-size: 1.1em;
-        margin-bottom: 12px;
-    }
-
-    .event-display {
-        padding: 20px;
-        border-radius: 15px;
-    }
-
-    .event-display h2 {
-        font-size: 1.8em;
-        margin-bottom: 15px;
-    }
-
-    .event-display p {
+        padding: 12px 18px;
         font-size: 1em;
-        margin-bottom: 20px;
+    }
+
+    .stat-item {
+        padding: 8px 12px;
+    }
+
+    .stat-label {
+        font-size: 0.85em;
+    }
+
+    .stat-value {
+        font-size: 1.4em;
     }
 }

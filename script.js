@@ -5,21 +5,24 @@ let player = {
     health: 100,
     smarts: 50,
     money: 0,
-    // NEW: Track current life stage
+    charisma: 50, // NEW STAT: Charisma
     lifeStage: 'Birth'
 };
 
 // --- DOM Elements (References to HTML elements) ---
 const ageDisplay = document.getElementById('ageDisplay');
-const lifeStageDisplay = document.getElementById('lifeStageDisplay'); // NEW: Reference for life stage
+const lifeStageDisplay = document.getElementById('lifeStageDisplay');
 const happinessStat = document.getElementById('happinessStat');
 const healthStat = document.getElementById('healthStat');
 const smartsStat = document.getElementById('smartsStat');
 const moneyStat = document.getElementById('moneyStat');
+const charismaStat = document.getElementById('charismaStat'); // NEW: Charisma Stat Display
 const advanceTimeButton = document.getElementById('advanceTimeButton');
 
 const studyButton = document.getElementById('studyButton');
 const workButton = document.getElementById('workButton');
+const socializeButton = document.getElementById('socializeButton'); // NEW: Socialize Button
+
 
 const eventDisplay = document.querySelector('.event-display');
 const eventTitle = document.getElementById('eventTitle');
@@ -28,7 +31,7 @@ const eventChoices = document.getElementById('eventChoices');
 
 
 // --- Game State Variables ---
-let isGameOver = false; // NEW: Flag to track game over state
+let isGameOver = false; // Flag to track game over state
 
 // --- Core Game Functions ---
 
@@ -43,6 +46,7 @@ function initializeGame() {
     player.health = 100;
     player.smarts = 50;
     player.money = 0;
+    player.charisma = 50; // Initialize new stat
     player.lifeStage = 'Birth'; // Reset life stage
     isGameOver = false; // Reset game over flag
 
@@ -59,11 +63,12 @@ function initializeGame() {
  */
 function updateStatDisplay() {
     ageDisplay.textContent = player.age;
-    lifeStageDisplay.textContent = player.lifeStage; // Update life stage display
+    lifeStageDisplay.textContent = player.lifeStage;
     happinessStat.textContent = player.happiness;
     healthStat.textContent = player.health;
     smartsStat.textContent = player.smarts;
     moneyStat.textContent = player.money;
+    charismaStat.textContent = player.charisma; // Update charisma display
 }
 
 /**
@@ -80,8 +85,8 @@ function changeStat(statName, value, min = 0, max = 100) {
     if (player.hasOwnProperty(statName)) { // Check if the stat exists on the player object
         player[statName] += value;
 
-        // Apply bounds for specific stats (happiness, health, smarts)
-        if (statName === 'happiness' || statName === 'health' || statName === 'smarts') {
+        // Apply bounds for specific stats (happiness, health, smarts, charisma)
+        if (statName === 'happiness' || statName === 'health' || statName === 'smarts' || statName === 'charisma') {
             player[statName] = Math.max(min, Math.min(max, player[statName]));
         }
         // Money currently has no upper limit or negative limit, adjust as needed.
@@ -91,18 +96,42 @@ function changeStat(statName, value, min = 0, max = 100) {
         console.warn(`Attempted to change non-existent stat: ${statName}`);
     }
 }
+
+/**
+ * Simulates a dice roll with a given number of sides, adds a stat bonus, and checks against a difficulty.
+ * @param {number} sides - Number of sides on the die (e.g., 20 for a d20).
+ * @param {string} statName - The name of the player stat to add as a bonus (e.g., 'smarts', 'health').
+ * @param {number} difficulty - The target number to beat or meet for success.
+ * @returns {object} An object containing the roll result, stat bonus, total score, and success status.
+ */
+function rollDice(sides, statName, difficulty) {
+    const roll = Math.floor(Math.random() * sides) + 1; // Roll from 1 to 'sides'
+    const statBonus = player[statName] || 0; // Get stat value, default to 0 if statName is invalid
+    // DIFFICULTY CHANGE: Stat bonus scaled down significantly (e.g., 20 stat points = +1 to roll)
+    const effectiveStatBonus = Math.floor(statBonus / 20);
+    const totalScore = roll + effectiveStatBonus;
+    const isSuccess = totalScore >= difficulty;
+
+    console.log(`--- Skill Check ---`);
+    console.log(`Rolling D${sides} for ${statName} (Difficulty: ${difficulty})`);
+    console.log(`Roll: ${roll}, ${statName} Bonus: ${effectiveStatBonus}, Total: ${totalScore}`);
+    console.log(`Result: ${isSuccess ? 'SUCCESS!' : 'FAILURE!'}`);
+    console.log(`-------------------`);
+
+    return { roll, statBonus: effectiveStatBonus, totalScore, isSuccess };
+}
+
 /**
  * Calculates the percentage chance of success for a given skill check.
- * Assumes a d20 roll with stat bonus (stat/10).
+ * Assumes a d20 roll with stat bonus (stat/20).
  * @param {string} statName - The name of the player stat (e.g., 'smarts').
  * @param {number} difficulty - The target number to beat or meet.
  * @returns {object} An object containing the percentage and a color string.
  */
 function calculateSuccessChance(statName, difficulty) {
     const statBonus = player[statName] || 0;
-    const effectiveStatBonus = Math.floor(statBonus / 10);
+    const effectiveStatBonus = Math.floor(statBonus / 20); // Match rollDice scaling
 
-    // Calculate the minimum roll needed on a d20
     let requiredRoll = difficulty - effectiveStatBonus;
 
     let successRolls = 0;
@@ -116,37 +145,15 @@ function calculateSuccessChance(statName, difficulty) {
 
     const percentage = Math.round((successRolls / 20) * 100);
 
-    let color = 'red'; // Default to red (hard)
-    if (percentage >= 70) {
-        color = 'green'; // Easy
-    } else if (percentage >= 40) {
-        color = 'orange'; // Changed from yellow for better visibility on some backgrounds (medium)
-    } else {
-        color = 'red'; // Hard
+    // COLOR CHANGE: Using darker, more visible colors
+    let color = '#dc3545'; // Bootstrap Danger Red (Hard)
+    if (percentage >= 75) { // Adjusted threshold for Green (Easy)
+        color = '#28a745'; // Bootstrap Success Green
+    } else if (percentage >= 40) { // Adjusted threshold for Orange (Medium)
+        color = '#ffc107'; // Bootstrap Warning Yellow/Orange
     }
 
     return { percentage, color };
-}
-/**
- * Simulates a dice roll with a given number of sides, adds a stat bonus, and checks against a difficulty.
- * @param {number} sides - Number of sides on the die (e.g., 20 for a d20).
- * @param {string} statName - The name of the player stat to add as a bonus (e.g., 'smarts', 'health').
- * @param {number} difficulty - The target number to beat or meet for success.
- * @returns {object} An object containing the roll result, stat bonus, total score, and success status.
- */
-function rollDice(sides, statName, difficulty) {
-    const roll = Math.floor(Math.random() * sides) + 1; // Roll from 1 to 'sides'
-    const statBonus = player[statName] || 0; // Get stat value, default to 0 if statName is invalid
-    const totalScore = roll + Math.floor(statBonus / 10); // Simple scaling: 10 stat points = +1 to roll
-    const isSuccess = totalScore >= difficulty;
-
-    console.log(`--- Skill Check ---`);
-    console.log(`Rolling D${sides} for ${statName} (Difficulty: ${difficulty})`);
-    console.log(`Roll: ${roll}, ${statName} Bonus: ${Math.floor(statBonus / 10)}, Total: ${totalScore}`);
-    console.log(`Result: ${isSuccess ? 'SUCCESS!' : 'FAILURE!'}`);
-    console.log(`-------------------`);
-
-    return { roll, statBonus: Math.floor(statBonus / 10), totalScore, isSuccess };
 }
 
 /**
@@ -168,7 +175,7 @@ function hideEventDisplay() {
 }
 
 /**
- * Handles player choosing an action (e.g., Study, Work).
+ * Handles player choosing an action (e.g., Study, Work, Socialize).
  * Applies stat changes based on the action and current life stage.
  * @param {string} actionName - The name of the action performed.
  */
@@ -178,25 +185,25 @@ function handleAction(actionName) {
 
     // Apply effects based on action and current life stage
     if (actionName === 'study') {
-        // Can study at any age, but might be more effective later
-        changeStat('smarts', 5);
-        changeStat('happiness', -5); // Study can be tiring!
+        changeStat('smarts', 7); // Slightly more effective
+        changeStat('happiness', -5);
         console.log("Player chose to Study.");
     } else if (actionName === 'work') {
-        // Only allow working if player is at least 'Teenager'
         if (player.lifeStage === 'Teenager' || player.lifeStage === 'Young Adult' || player.lifeStage === 'Adult' || player.lifeStage === 'Middle Age' || player.lifeStage === 'Senior') {
-            changeStat('money', 20);
-            changeStat('health', -5); // Work can be draining!
+            changeStat('money', 25); // Slightly more money
+            changeStat('health', -7); // A bit more draining
             changeStat('happiness', -5);
             console.log("Player chose to Work.");
         } else {
             console.log("Too young to work!");
-            // Optional: provide user feedback in UI if too young
-            // eventTitle.textContent = "Too Young!";
-            // eventDescription.textContent = "You need to be older to work.";
-            // showEventDisplay();
         }
+    } else if (actionName === 'socialize') { // NEW ACTION
+        changeStat('charisma', 8); // Gain charisma
+        changeStat('happiness', 10); // Gain happiness
+        changeStat('health', -2); // Maybe a little tiring
+        console.log("Player chose to Socialize.");
     }
+    checkGameOver(); // Check if actions led to game over (e.g. low health/happiness)
 }
 
 
@@ -207,21 +214,21 @@ function handleAction(actionName) {
  * Disables buttons if the game is over.
  */
 function updateActionButtons() {
-    // Default states for common actions
-    studyButton.disabled = false; // Study generally available
-    workButton.disabled = true; // Default to disabled for young ages
+    studyButton.disabled = false;
+    workButton.disabled = true;
+    socializeButton.disabled = false; // Socialize generally available
 
-    // Logic based on life stage
     if (player.lifeStage === 'Birth' || player.lifeStage === 'Infancy' || player.lifeStage === 'Childhood') {
-        workButton.disabled = true; // Cannot work as a child
+        workButton.disabled = true;
     } else if (player.lifeStage === 'Teenager' || player.lifeStage === 'Young Adult' || player.lifeStage === 'Adult' || player.lifeStage === 'Middle Age' || player.lifeStage === 'Senior') {
-        workButton.disabled = false; // Can work from teenager onwards
+        workButton.disabled = false;
     }
 
     // Disable all action buttons if the game is over
     if (isGameOver) {
         studyButton.disabled = true;
         workButton.disabled = true;
+        socializeButton.disabled = true;
     }
 }
 
@@ -232,7 +239,7 @@ function disableGameButtons() {
     advanceTimeButton.disabled = true;
     studyButton.disabled = true;
     workButton.disabled = true;
-    // Add other action buttons here as you add them
+    socializeButton.disabled = true; // Disable new button too
 }
 
 /**
@@ -250,9 +257,9 @@ function enableGameButtons() {
  * This should be called after age increments.
  */
 function checkLifeStage() {
-    let newStage = player.lifeStage; // Start with current stage
+    let newStage = player.lifeStage;
 
-    if (player.age < 1) { // 0 years old
+    if (player.age < 1) {
         newStage = 'Birth';
     } else if (player.age < 5) {
         newStage = 'Infancy';
@@ -267,15 +274,14 @@ function checkLifeStage() {
     } else if (player.age < 80) {
         newStage = 'Middle Age';
     } else {
-        newStage = 'Senior'; // For ages 80+
+        newStage = 'Senior';
     }
 
     if (newStage !== player.lifeStage) {
         player.lifeStage = newStage;
         console.log(`NEW LIFE STAGE: ${player.lifeStage}`);
-        updateStatDisplay(); // Update display for new stage
-        updateActionButtons(); // Update button availability for new stage
-        // Potentially trigger stage-specific events or stat changes here
+        updateStatDisplay();
+        updateActionButtons();
     }
 }
 
@@ -283,23 +289,27 @@ function checkLifeStage() {
 
 /**
  * Checks for game over conditions.
- * Currently, game ends when player reaches age 90.
+ * Now includes health and happiness thresholds.
  */
 function checkGameOver() {
-    // Game Over condition: reaching 90 years old
+    if (isGameOver) return; // Already game over
+
+    let cause = null;
+
     if (player.age >= 90) {
-        endGame("You lived a long and fulfilling life!");
+        cause = "You lived a long and fulfilling life!";
+    } else if (player.health <= 0) {
+        cause = "Your health deteriorated completely. Life ended prematurely.";
+    } else if (player.happiness <= 0) {
+        cause = "You lost all hope and joy. Life became unbearable.";
+    } else if (player.money <= -500) { // Example: too much debt
+        cause = "You went bankrupt and couldn't recover from crushing debt.";
     }
-    // Future: add conditions for low health, happiness, or specific events
-    // if (player.health <= 0) {
-    //    endGame("Your health gave out...");
-    // }
-    // if (player.happiness <= 0) {
-    //    endGame("You ran out of joy...");
-    // }
-    // if (player.money < -1000) { // Example: too much debt
-    //    endGame("You went bankrupt and couldn't recover...");
-    // }
+
+
+    if (cause) {
+        endGame(cause);
+    }
 }
 
 /**
@@ -314,7 +324,6 @@ function endGame(cause) {
 
     // Dynamically create and display the end-of-life summary
     eventTitle.textContent = "Life Ended!";
-    // THIS IS THE CRUCIAL PART - CORRECT SYNTAX for ${variable}
     eventDescription.innerHTML = `
         <p>${cause}</p>
         <p>You reached the age of **${player.age}**.</p>
@@ -324,6 +333,7 @@ function endGame(cause) {
             <li>Health: ${player.health}</li>
             <li>Smarts: ${player.smarts}</li>
             <li>Money: $${player.money}</li>
+            <li>Charisma: ${player.charisma}</li>
         </ul>
         <p>Click "New Life" to spin again!</p>
     `;
@@ -344,38 +354,38 @@ const gameEvents = [
         description: "A fluffy cat rubs against your leg, looking for attention. What do you do?",
         choices: [
             {
-                text: "Gently pet the cat. (Smarts Check - Difficulty 10)",
+                text: "Gently pet the cat.",
                 statCheck: 'smarts',
-                difficulty: 10, // Target score for success (d20 + smarts/10)
-                successEffects: { happiness: 15, health: 2 },
+                difficulty: 15, // INCREASED DIFFICULTY
+                successEffects: { happiness: 15, health: 2, charisma: 5 }, // Added charisma gain
                 failureEffects: { happiness: -5 },
-                successText: "The cat purrs loudly and rubs against your leg. You feel a warm connection.",
+                successText: "The cat purrs loudly and rubs against your leg. You feel a warm connection and a little more sociable.",
                 failureText: "The cat hisses and scratches you! Ouch. Maybe you weren't gentle enough."
             },
-            { text: "Ignore it.", effects: { happiness: -2 } } // Standard choice, no check
+            { text: "Ignore it.", effects: { happiness: -2 } }
         ],
-        conditions: (player) => true // Always eligible
+        conditions: (player) => true
     },
     {
         id: 'earlyLifeEvent2',
         title: "Found a Coin!",
         description: "While walking, you spot a shiny coin on the ground.",
         effects: { money: 10 },
-        conditions: (player) => true // Always eligible
+        conditions: (player) => true
     },
     {
         id: 'healthEvent1',
         title: "Caught a Cold",
         description: "You've caught a minor cold. It's nothing serious, but you feel a bit under the weather.",
-        effects: { health: -10, happiness: -5 },
-        conditions: (player) => player.age >= 5 // Can only catch colds after infancy
+        effects: { health: -15, happiness: -10 }, // Increased impact
+        conditions: (player) => player.age >= 5
     },
     {
         id: 'childhoodDiscovery',
         title: "Exploring the Woods",
         description: "You ventured into the woods behind your house and found a hidden stream!",
         effects: { happiness: 15, smarts: 5 },
-        conditions: (player) => player.lifeStage === 'Childhood' || player.lifeStage === 'Teenager' // Specific to childhood/teenager
+        conditions: (player) => player.lifeStage === 'Childhood' || player.lifeStage === 'Teenager'
     },
     {
         id: 'schoolProject',
@@ -383,25 +393,25 @@ const gameEvents = [
         description: "You have a major school project due soon that requires a lot of research. How do you approach it?",
         choices: [
             {
-                text: "Dedicate yourself to extensive research. (Smarts Check - Difficulty 12)",
+                text: "Dedicate yourself to extensive research.",
                 statCheck: 'smarts',
-                difficulty: 12,
+                difficulty: 18, // INCREASED DIFFICULTY
                 successEffects: { smarts: 15, happiness: -5, health: -5 },
                 failureEffects: { smarts: 5, happiness: -10, health: -5 },
                 successText: "Your hard work paid off! You learned a great deal and excelled at the project.",
                 failureText: "Despite your efforts, the project was harder than expected. You passed, but it was tough."
             },
             {
-                text: "Wing it and hope for the best. (Smarts Check - Difficulty 8)",
+                text: "Wing it and hope for the best.",
                 statCheck: 'smarts',
-                difficulty: 8,
+                difficulty: 12, // INCREASED DIFFICULTY
                 successEffects: { smarts: 2, happiness: 10 },
-                failureEffects: { smarts: -10, happiness: -15 },
+                failureEffects: { smarts: -15, happiness: -20, health: -5 }, // Harsher failure
                 successText: "Surprisingly, your quick thinking saved the day! You aced it without much effort.",
                 failureText: "Your laziness caught up with you. The project was a disaster, and you barely passed."
             }
         ],
-        conditions: (player) => ['Childhood', 'Teenager'].includes(player.lifeStage) // Relevant for school-going ages
+        conditions: (player) => ['Childhood', 'Teenager'].includes(player.lifeStage)
     },
     {
         id: 'firstJobOffer',
@@ -409,11 +419,11 @@ const gameEvents = [
         description: "A local shop is looking for part-time help. Are you interested?",
         choices: [
             {
-                text: "Take the job. (Health Check - Difficulty 10)",
+                text: "Take the job.",
                 statCheck: 'health',
-                difficulty: 10,
-                successEffects: { money: 20, happiness: 5, health: -2 },
-                failureEffects: { money: 10, happiness: -5, health: -10 },
+                difficulty: 16, // INCREASED DIFFICULTY
+                successEffects: { money: 25, happiness: 5, health: -5 },
+                failureEffects: { money: 10, happiness: -10, health: -15 }, // Harsher failure
                 successText: "You handled the work well, though it was tiring. Good pay!",
                 failureText: "The job was more demanding than expected, leaving you exhausted and underpaid."
             },
@@ -427,11 +437,11 @@ const gameEvents = [
         description: "A large, unexpected bill arrives. You need to deal with it.",
         choices: [
             {
-                text: "Try to negotiate the bill down. (Smarts Check - Difficulty 15)",
+                text: "Try to negotiate the bill down.",
                 statCheck: 'smarts',
-                difficulty: 15,
-                successEffects: { money: -10, happiness: 5 },
-                failureEffects: { money: -50, happiness: -15 },
+                difficulty: 20, // INCREASED DIFFICULTY (can be very hard without high smarts)
+                successEffects: { money: -10, happiness: 5, charisma: 5 }, // Added charisma
+                failureEffects: { money: -70, happiness: -20 }, // Harsher failure
                 successText: "You successfully negotiated a lower price! Phew.",
                 failureText: "Your negotiation failed, and you ended up paying the full, hefty sum."
             },
@@ -440,7 +450,79 @@ const gameEvents = [
                 effects: { money: -30, happiness: -10 }
             }
         ],
-        conditions: (player) => ['Young Adult', 'Adult', 'Middle Age'].includes(player.lifeStage) && player.money > 50 // Only if you have money
+        conditions: (player) => ['Young Adult', 'Adult', 'Middle Age'].includes(player.lifeStage) && player.money > 50
+    },
+    // --- NEW EVENTS UTILIZING CHARISMA ---
+    {
+        id: 'publicSpeakingOpportunity',
+        title: "Public Speaking Opportunity",
+        description: "You've been asked to give a presentation to a large audience.",
+        choices: [
+            {
+                text: "Embrace the challenge and deliver a powerful speech.",
+                statCheck: 'charisma',
+                difficulty: 17, // Medium to Hard
+                successEffects: { charisma: 15, smarts: 5, happiness: 10 },
+                failureEffects: { happiness: -10, smarts: -5 },
+                successText: "Your speech was a resounding success! The audience was captivated.",
+                failureText: "You fumbled your words and felt embarrassed. It did not go well."
+            },
+            {
+                text: "Decline the offer.",
+                effects: { happiness: -5 }
+            }
+        ],
+        conditions: (player) => player.lifeStage === 'Young Adult' || player.lifeStage === 'Adult'
+    },
+    {
+        id: 'socialGathering',
+        title: "Invited to a Party",
+        description: "A friend invited you to a big social gathering. Will you go?",
+        choices: [
+            {
+                text: "Attend and mingle with everyone.",
+                statCheck: 'charisma',
+                difficulty: 12, // Easier charisma check
+                successEffects: { charisma: 10, happiness: 15, money: 5 }, // Might meet someone who helps with money
+                failureEffects: { happiness: -5 },
+                successText: "You had a great time and made new connections!",
+                failureText: "You felt awkward and left early. Not your scene."
+            },
+            {
+                text: "Stay home and relax.",
+                effects: { health: 5, happiness: 2 }
+            }
+        ],
+        conditions: (player) => player.age >= 18
+    },
+    {
+        id: 'unexpectedGift',
+        title: "Unexpected Gift!",
+        description: "An old acquaintance remembers you fondly and sends you a thoughtful gift.",
+        effects: { money: 50, happiness: 10 },
+        conditions: (player) => player.age >= 40 && player.charisma >= 60 // More likely if higher charisma
+    },
+    {
+        id: 'careerOpportunity',
+        title: "Career Opportunity",
+        description: "A challenging but rewarding career opportunity arises. It requires both intellect and social skills.",
+        choices: [
+            {
+                text: "Pursue the opportunity. (Smarts & Charisma Check - Difficulty 17)",
+                statCheck: 'smarts', // Primary check
+                secondaryStatCheck: 'charisma', // NEW: Secondary check example (handled in logic, not choice)
+                difficulty: 17,
+                successEffects: { money: 100, smarts: 10, charisma: 10, happiness: 15 },
+                failureEffects: { money: -10, happiness: -10, health: -5 },
+                successText: "You landed the position! It's challenging but incredibly rewarding.",
+                failureText: "You tried, but it didn't work out. It was a stressful experience."
+            },
+            {
+                text: "Stick with your current path.",
+                effects: { happiness: 5 }
+            }
+        ],
+        conditions: (player) => ['Young Adult', 'Adult'].includes(player.lifeStage) && player.smarts >= 50 && player.charisma >= 50
     }
 ];
 
@@ -453,9 +535,6 @@ function triggerRandomEvent() {
     if (isGameOver) return; // Don't trigger events if game is over
 
     // Filter events based on conditions (e.g., age, stats)
-    // An event is eligible if:
-    // 1. It doesn't have a 'conditions' property (meaning it's always eligible by default).
-    // 2. Or, if it has a 'conditions' property, that condition function returns true for the current player state.
     const eligibleEvents = gameEvents.filter(event => !event.conditions || event.conditions(player));
 
     if (eligibleEvents.length === 0) {
@@ -472,77 +551,86 @@ function triggerRandomEvent() {
     eventChoices.innerHTML = ''; // Clear previous choices
 
     if (event.choices) {
-        // Inside function triggerRandomEvent() { ... }
-// Inside if (event.choices) { ... }
+        event.choices.forEach(choice => {
+            const choiceButton = document.createElement('button');
+            choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
 
-event.choices.forEach(choice => {
-    const choiceButton = document.createElement('button');
-    choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
-
-    let choiceText = choice.text;
-    if (choice.statCheck) {
-        const { percentage, color } = calculateSuccessChance(choice.statCheck, choice.difficulty);
-        // Corrected: Using ${variable} syntax inside the style attribute
-        choiceText += ` <span style="color: ${color}; font-weight: bold;">(${percentage}%)</span>`;
-    }
-    choiceButton.innerHTML = choiceText; // Use innerHTML to render the span correctly
-
-    choiceButton.onclick = () => { // When this button is clicked
-        // Always hide the event display first, then re-show with results if it's a check
-        hideEventDisplay(); // Clear and hide previous event details immediately
-
-        if (choice.statCheck) {
-            // This is a skill check choice
-            const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty); // Roll a d20
-            let outcomeMessage = '';
-
-            if (isSuccess) {
-                if (choice.successEffects) {
-                    for (const stat in choice.successEffects) {
-                        changeStat(stat, choice.successEffects[stat]);
-                    }
-                }
-                outcomeMessage = choice.successText || "You succeeded!";
-            } else {
-                if (choice.failureEffects) {
-                    for (const stat in choice.failureEffects) {
-                        changeStat(stat, choice.failureEffects[stat]);
-                    }
-                }
-                outcomeMessage = choice.failureText || "You failed!";
+            let choiceText = choice.text;
+            if (choice.statCheck) {
+                const { percentage, color } = calculateSuccessChance(choice.statCheck, choice.difficulty);
+                // Corrected: Using ${variable} syntax inside the style attribute
+                choiceText += ` <span style="color: ${color}; font-weight: bold;">(${percentage}%)</span>`;
             }
-
-            // SIMPLIFIED Outcome Message
-            eventTitle.textContent = `${event.title} - Outcome`; // Update title
-            eventDescription.innerHTML = `
-                <p>${outcomeMessage}</p>
-                <p><em>(Original description: ${event.description})</em></p>
-            `; // Removed explicit roll numbers from display
-            eventChoices.innerHTML = ''; // Clear choice buttons
-
-            // Add a "Continue" button to dismiss the outcome
-            const continueButton = document.createElement('button');
-            continueButton.textContent = "Continue";
-            continueButton.classList.add('event-continue-button');
-            continueButton.onclick = hideEventDisplay; // Hide event after continue
-            eventChoices.appendChild(continueButton);
-
-            showEventDisplay(); // Re-show the event display with the updated content
-
-        } else {
-            // This is a standard choice (no skill check)
-            if (choice.effects) {
-                for (const stat in choice.effects) {
-                    changeStat(stat, choice.effects[stat]);
-                }
+            // NEW: Adding hint for secondary checks
+            if (choice.secondaryStatCheck) {
+                choiceText += ` <span style="font-style: italic; opacity: 0.8;">(Also consider ${choice.secondaryStatCheck})</span>`;
             }
-            // For non-check choices, hide display and implicitly allow next turn
-            // We already called hideEventDisplay() at the start of the onclick handler.
-        }
-        // IMPORTANT: We don't advance time here, that's for advanceTimeButton
-    };
-    eventChoices.appendChild(choiceButton);
-});
+            choiceButton.innerHTML = choiceText; // Use innerHTML to render the span correctly
+
+            choiceButton.onclick = () => { // When this button is clicked
+                // Always hide the event display first, then re-show with results if it's a check
+                hideEventDisplay(); // Clear and hide previous event details immediately
+
+                if (choice.statCheck) {
+                    // This is a skill check choice
+                    const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty);
+                    let outcomeMessage = '';
+                    let finalSuccess = isSuccess;
+
+                    // NEW: Handle secondary stat check if it exists
+                    if (choice.secondaryStatCheck && finalSuccess) { // Only if primary succeeded
+                        const { roll: secondaryRoll, statBonus: secondaryStatBonus, totalScore: secondaryTotalScore, isSuccess: secondaryIsSuccess } = rollDice(20, choice.secondaryStatCheck, choice.difficulty); // Use same difficulty for simplicity, could be different
+                        console.log(`--- Secondary Skill Check (${choice.secondaryStatCheck}) ---`);
+                        console.log(`Roll: ${secondaryRoll}, Bonus: ${secondaryStatBonus}, Total: ${secondaryTotalScore}`);
+                        console.log(`Result: ${secondaryIsSuccess ? 'SUCCESS!' : 'FAILURE!'}`);
+                        finalSuccess = finalSuccess && secondaryIsSuccess; // Both must pass
+                    }
+
+                    if (finalSuccess) {
+                        if (choice.successEffects) {
+                            for (const stat in choice.successEffects) {
+                                changeStat(stat, choice.successEffects[stat]);
+                            }
+                        }
+                        outcomeMessage = choice.successText || "You succeeded!";
+                    } else {
+                        if (choice.failureEffects) {
+                            for (const stat in choice.failureEffects) {
+                                changeStat(stat, choice.failureEffects[stat]);
+                            }
+                        }
+                        outcomeMessage = choice.failureText || "You failed!";
+                    }
+
+                    // SIMPLIFIED Outcome Message
+                    eventTitle.textContent = `${event.title} - Outcome`;
+                    eventDescription.innerHTML = `
+                        <p>${outcomeMessage}</p>
+                        <p><em>(Original event: ${event.description})</em></p>
+                    `;
+                    eventChoices.innerHTML = ''; // Clear choice buttons
+
+                    const continueButton = document.createElement('button');
+                    continueButton.textContent = "Continue";
+                    continueButton.classList.add('event-continue-button');
+                    continueButton.onclick = hideEventDisplay;
+                    eventChoices.appendChild(continueButton);
+
+                    showEventDisplay();
+
+                } else {
+                    // This is a standard choice (no skill check)
+                    if (choice.effects) {
+                        for (const stat in choice.effects) {
+                            changeStat(stat, choice.effects[stat]);
+                        }
+                    }
+                    hideEventDisplay();
+                }
+                checkGameOver(); // Always check game over after an action/event resolution
+            };
+            eventChoices.appendChild(choiceButton);
+        });
     } else if (event.effects) {
         // If no choices, apply effects directly and add a "Continue" button
         for (const stat in event.effects) {
@@ -550,8 +638,8 @@ event.choices.forEach(choice => {
         }
         const continueButton = document.createElement('button');
         continueButton.textContent = "Continue";
-        continueButton.classList.add('event-continue-button'); // Add class for styling
-        continueButton.onclick = hideEventDisplay; // Hide event when continue is clicked
+        continueButton.classList.add('event-continue-button');
+        continueButton.onclick = hideEventDisplay;
         eventChoices.appendChild(continueButton);
     }
 
@@ -563,40 +651,48 @@ event.choices.forEach(choice => {
  * This is the main game loop called by the "Next Month" button.
  */
 function advanceTime() {
-    if (isGameOver) return; // Prevent advancing time if game is over
+    if (isGameOver) return;
 
-    hideEventDisplay(); // Hide any existing event before starting a new turn
+    hideEventDisplay();
 
     player.age++;
     console.log("Time advanced. New age:", player.age);
     updateStatDisplay();
 
-    checkLifeStage(); // Check for life stage transitions after age increment
-    checkGameOver(); // Check for game over conditions
+    checkLifeStage();
+    checkGameOver(); // Check for game over conditions after age/stat changes
 
-    // If game is over after checks, stop further execution
     if (isGameOver) {
         return;
     }
 
+    // NEW: Random stat changes each turn to add dynamic difficulty
+    // Health decay over time, especially at older ages
+    if (player.age > 60) {
+        changeStat('health', -Math.floor(Math.random() * 3), 0, 100); // 0 to 2 health loss
+    } else {
+        changeStat('health', -Math.floor(Math.random() * 2), 0, 100); // 0 to 1 health loss
+    }
+
+    // Slight happiness fluctuation
+    changeStat('happiness', Math.floor(Math.random() * 5) - 2, 0, 100); // -2 to +2 happiness
+
     // Only trigger random event if game is not over and no "End of Life" message is showing
-    if (Math.random() < 0.5) { // 50% chance for an event
+    if (Math.random() < 0.6) { // Slightly increased chance for an event (60%)
         triggerRandomEvent();
     } else {
-        // If no event triggered, ensure display is hidden (in case previous was an event)
         hideEventDisplay();
     }
 }
 
 // --- Event Listeners ---
-// Attaches the 'advanceTime' function to the 'click' event of the 'advanceTimeButton'.
 advanceTimeButton.addEventListener('click', advanceTime);
 
-// Add event listeners for the new action buttons
 studyButton.addEventListener('click', () => handleAction('study'));
 workButton.addEventListener('click', () => handleAction('work'));
+// NEW: Event listener for Socialize button
+socializeButton.addEventListener('click', () => handleAction('socialize'));
 
 
 // --- Initial Game Setup ---
-// Call this function once when the page loads to set up the game
 initializeGame();

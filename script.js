@@ -145,12 +145,12 @@ function calculateSuccessChance(statName, difficulty) {
 
     const percentage = Math.round((successRolls / 20) * 100);
 
-    // COLOR CHANGE: Using darker, more visible colors
-    let color = '#dc3545'; // Bootstrap Danger Red (Hard)
-    if (percentage >= 75) { // Adjusted threshold for Green (Easy)
-        color = '#28a745'; // Bootstrap Success Green
-    } else if (percentage >= 40) { // Adjusted threshold for Orange (Medium)
-        color = '#ffc107'; // Bootstrap Warning Yellow/Orange
+    // UPDATED COLORS: Now directly uses CSS variables for consistency with style.css
+    let color = 'var(--text-danger)'; // Red for hard (OrangeRed)
+    if (percentage >= 75) {
+        color = 'var(--text-success)'; // Green for easy (Chartreuse)
+    } else if (percentage >= 40) {
+        color = 'var(--text-warning)'; // Yellow for medium (Gold)
     }
 
     return { percentage, color };
@@ -325,27 +325,26 @@ function endGame(cause) {
     // Dynamically create and display the end-of-life summary
     eventTitle.textContent = "Life Ended!";
     eventDescription.innerHTML = `
-        <p>${cause}</p>
-        <p>You reached the age of **${player.age}**.</p>
-        <p>Final Stats:</p>
-        <ul>
-            <li>Happiness: ${player.happiness}</li>
-            <li>Health: ${player.health}</li>
-            <li>Smarts: ${player.smarts}</li>
-            <li>Money: $${player.money}</li>
-            <li>Charisma: ${player.charisma}</li>
-        </ul>
-        <p>Click "New Life" to spin again!</p>
-    `;
-    // Add a "New Life" button to restart the game
-    const newLifeButton = document.createElement('button');
-    newLifeButton.textContent = "New Life";
-    newLifeButton.classList.add('new-game-button'); // Add class for styling
-    newLifeButton.onclick = initializeGame; // Restarts the game when clicked
-    eventChoices.appendChild(newLifeButton);
-    showEventDisplay(); // Show the end-of-life summary
+        <p><span class="math-inline">\{cause\}</p\>
+        <p>You reached the age of **{player.age}**.</p>
+<p>Final Stats:</p>
+<ul>
+<li>Happiness: ${player.happiness}</li>
+<li>Health: ${player.health}</li>
+<li>Smarts: ${player.smarts}</li>
+<li>Money: $${player.money}</li>
+<li>Charisma: ${player.charisma}</li>
+</ul>
+<p>Click "New Life" to spin again!</p>
+`;
+// Add a "New Life" button to restart the game
+const newLifeButton = document.createElement('button');
+newLifeButton.textContent = "New Life";
+newLifeButton.classList.add('new-game-button'); // Add class for styling
+newLifeButton.onclick = initializeGame; // Restarts the game when clicked
+eventChoices.appendChild(newLifeButton);
+showEventDisplay(); // Show the end-of-life summary
 }
-
 // --- Event Data ---
 const gameEvents = [
     {
@@ -407,6 +406,7 @@ const gameEvents = [
                 difficulty: 12, // INCREASED DIFFICULTY
                 successEffects: { smarts: 2, happiness: 10 },
                 failureEffects: { smarts: -15, happiness: -20, health: -5 }, // Harsher failure
+                successText: "Surprisingly, your quick thinking saved the day! You aced it without much effort.",
                 successText: "Surprisingly, your quick thinking saved the day! You aced it without much effort.",
                 failureText: "Your laziness caught up with you. The project was a disaster, and you barely passed."
             }
@@ -558,8 +558,9 @@ function triggerRandomEvent() {
             let choiceText = choice.text;
             if (choice.statCheck) {
                 const { percentage, color } = calculateSuccessChance(choice.statCheck, choice.difficulty);
-                // Corrected: Using ${variable} syntax inside the style attribute
-                choiceText += ` <span style="color: ${color}; font-weight: bold;">(${percentage}%)</span>`;
+                // Using ${variable} syntax inside the style attribute for dynamic color from JS
+                // The text-shadow is now handled by the CSS for .event-choice-button span
+                choiceText += ` <span style="color: <span class="math-inline">\{color\};"\>\(</span>{percentage}%)</span>`;
             }
             // NEW: Adding hint for secondary checks
             if (choice.secondaryStatCheck) {
@@ -583,6 +584,7 @@ function triggerRandomEvent() {
                         console.log(`--- Secondary Skill Check (${choice.secondaryStatCheck}) ---`);
                         console.log(`Roll: ${secondaryRoll}, Bonus: ${secondaryStatBonus}, Total: ${secondaryTotalScore}`);
                         console.log(`Result: ${secondaryIsSuccess ? 'SUCCESS!' : 'FAILURE!'}`);
+                        console.log(`-------------------`);
                         finalSuccess = finalSuccess && secondaryIsSuccess; // Both must pass
                     }
 

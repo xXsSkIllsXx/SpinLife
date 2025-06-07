@@ -30,33 +30,37 @@
 }
 
 body {
-    font-family: 'Nunito', sans-serif; /* Body text font */
-    background: linear-gradient(135deg, var(--bg-color-dark) 0%, var(--bg-color-light) 100%); /* Subtle gradient background */
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--bg-color-dark) 0%, var(--bg-color-light) 100%);
     color: var(--text-color-primary);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Removed justify-content: center and align-items: center from body */
     min-height: 100vh;
     margin: 0;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
     line-height: 1.6;
-    padding: 20px; /* Overall padding for smaller screens */
+    padding: 20px;
     box-sizing: border-box;
+    /* New: Make body a flex container for the game-container to fill space */
+    flex-direction: column; /* Allow content to flow top-down */
+    align-items: center; /* Center horizontally if content doesn't fill width */
 }
 
 .game-container {
     background-color: var(--card-bg-color);
-    border-radius: 30px; /* Very rounded corners for a soft look */
+    border-radius: 30px;
     box-shadow: var(--shadow-soft);
-    padding: 40px; /* Increased padding */
-    width: 100%;
-    max-width: 650px; /* Increased max-width for more space */
+    padding: 40px;
+    width: 90%; /* Use 90% of the viewport width */
+    max-width: 1000px; /* Allow it to grow much wider */
     box-sizing: border-box;
     text-align: center;
     margin: auto; /* Center it */
-    display: flex;
+    display: flex; /* Keep flex for internal arrangement */
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Keep content centered within the container */
+    min-height: calc(100vh - 40px); /* Ensure it takes up most of the screen height if content is short */
+    justify-content: space-between; /* Distribute space vertically */
 }
 
 h1 {
@@ -70,16 +74,16 @@ h1 {
 
 /* --- Stats Display (Guaranteed Vertical Layout) --- */
 .stats-grid {
-    display: flex; /* Use flexbox */
-    flex-direction: column; /* Stack items vertically, guaranteeing each stat is on its own line */
-    gap: 15px; /* Spacing between stat items */
-    background-color: var(--bg-color-dark); /* Darker background for the stats block */
-    border-radius: 20px; /* Rounded corners */
-    padding: 25px; /* Increased padding */
+    display: flex;
+    flex-direction: column; /* Ensures vertical stacking of stat items */
+    gap: 15px;
+    background-color: var(--bg-color-dark);
+    border-radius: 20px;
+    padding: 25px;
     margin-bottom: 35px;
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-inset); /* Inner shadow for depth */
-    width: 100%; /* Take full width of container */
+    box-shadow: var(--shadow-inset);
+    width: 100%; /* Important: Make sure this takes full width of its parent (.game-container) */
     box-sizing: border-box;
 }
 

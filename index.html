@@ -10,9 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="game-container">
-        <h1>SpinLife</h1>
+    <h1>SpinLife</h1>
 
+<div class="game-content-wrapper">
+    <div class="left-panel">
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-label">Age:</span>
@@ -43,22 +44,24 @@
                 <span id="charismaStat" class="stat-value">50</span>
             </div>
         </div>
+    </div>
 
+    <div class="right-panel">
         <div class="action-buttons">
             <button id="studyButton" class="action-button">Study</button>
             <button id="workButton" class="action-button">Work</button>
             <button id="socializeButton" class="action-button">Socialize</button>
         </div>
-
         <button id="advanceTimeButton" class="main-button">Advance Time</button>
-
-        <div class="event-display" style="display: none;">
-            <h2 id="eventTitle"></h2>
-            <p id="eventDescription"></p>
-            <div id="eventChoices">
-                </div>
-        </div>
     </div>
+</div>
+
+<div class="event-display" style="display: none;">
+    <h2 id="eventTitle"></h2>
+    <p id="eventDescription"></p>
+    <div id="eventChoices">
+        </div>
+</div>
 
     <script src="script.js"></script>
 </body>

@@ -1,144 +1,142 @@
-/* Basic Reset and Body Styles */
+/* Basic Reset and Global Styles */
+:root {
+    /* Define color palette */
+    --dark-bg: #1c1c1f; /* Deeper dark background */
+    --darker-bg: #28282c; /* Slightly lighter dark for containers */
+    --card-bg: #323236; /* Background for main sections */
+    --text-light: #e0e0e0; /* Default light text */
+    --text-accent: #61dafb; /* Vibrant blue for accents/titles */
+    --text-success: #7FFF00; /* Chartreuse Green for success */
+    --text-warning: #FFD700; /* Gold for warning/average */
+    --text-danger: #FF4500; /* OrangeRed for danger/hard */
+    --button-primary: #007bff; /* Standard blue button */
+    --button-hover: #0056b3;
+    --button-secondary: #6c757d; /* Grey button for choices */
+    --button-secondary-hover: #5a6268;
+    --shadow-dark: rgba(0, 0, 0, 0.4);
+    --shadow-light: rgba(255, 255, 255, 0.05);
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; /* Modern font stack */
     margin: 0;
-    padding: 20px;
-    background-color: #282c34; /* Dark background */
-    color: #e0e0e0; /* Light text color */
+    padding: 0;
+    background-color: var(--dark-bg); /* Use defined dark background */
+    color: var(--text-light); /* Use defined light text color */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align to the top, not center vertically */
-    min-height: 100vh; /* Minimum height of the viewport */
-    box-sizing: border-box; /* Include padding in element's total width and height */
+    align-items: center; /* Center content vertically */
+    min-height: 100vh; /* Full viewport height */
+    box-sizing: border-box; /* Include padding in element's total size */
+    overflow-y: auto; /* Allow scrolling if content is long */
+    padding: 20px 10px; /* Padding for small screens */
 }
 
 /* Game Container Styling */
 .game-container {
-    background-color: #3a3f47;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: var(--darker-bg);
+    border-radius: 12px; /* Softer rounded corners */
+    padding: 30px;
+    box-shadow: 0 8px 20px var(--shadow-dark), 0 0 0 1px var(--shadow-light); /* Deeper shadow with subtle light border */
     text-align: center;
-    max-width: 600px; /* Max width for desktop */
-    width: 100%; /* Full width on smaller screens */
-    margin-top: 20px; /* Space from the top */
+    max-width: 700px; /* Slightly wider for better layout */
+    width: 100%;
+    margin: 20px auto; /* Auto margin for centering and spacing */
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between sections */
+    gap: 25px; /* More generous spacing between sections */
+    animation: fadeIn 0.8s ease-out forwards; /* Fade in animation */
+    opacity: 0; /* Start invisible for animation */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
-    color: #61dafb; /* A vibrant blue for the title */
-    margin-bottom: 20px;
+    color: var(--text-accent); /* Vibrant blue for the title */
+    margin-bottom: 25px;
+    font-size: 2.8em; /* Larger title */
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 5px var(--shadow-dark); /* Subtle shadow for title */
+}
+
+h2 {
+    color: var(--text-accent); /* Use accent color for section headings */
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--card-bg); /* Subtle separator */
+    padding-bottom: 10px;
+    font-size: 1.6em;
 }
 
 /* Stats Display Styling */
 .stats-display {
-    background-color: #4a4f58;
-    border-radius: 5px;
-    padding: 15px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for stats */
-    gap: 10px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* More room for stats */
+    gap: 15px;
+    margin-bottom: 20px; /* Space before actions */
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2); /* Inner glow effect */
 }
 
 .stats-display p {
     margin: 0;
-    font-size: 1.1em;
-    font-weight: bold;
+    font-size: 1.15em; /* Slightly larger stat text */
+    font-weight: 500; /* Medium font weight */
+    display: flex; /* For aligning span next to text */
+    justify-content: space-between; /* Pushes value to the right */
+    align-items: center;
 }
 
 .stats-display span {
-    color: #a0ff80; /* A soft green for stat values */
-    font-weight: normal;
-}
-
-/* Button Styling */
-button {
-    background-color: #007bff; /* Blue button */
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    width: 100%; /* Make buttons full width in their container */
-    box-sizing: border-box; /* Include padding/border in width */
-}
-
-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: translateY(0);
+    color: var(--text-success); /* Use success green for stat values */
+    font-weight: bold; /* Make values bolder */
+    font-size: 1.2em; /* Emphasize values */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Shadow for readability */
 }
 
 /* Action Buttons Container */
 .action-buttons {
     display: flex;
     flex-direction: column; /* Stack buttons vertically */
-    gap: 10px; /* Space between buttons */
-    margin-bottom: 20px;
+    gap: 12px; /* Space between buttons */
+    margin-bottom: 25px; /* Space before advance time */
 }
 
-/* Event Display Styling (hidden by default, shown by JS) */
-.event-display {
-    background-color: #5a626c;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-    text-align: left; /* Align event text to the left */
+/* Button Styling - General */
+button {
+    background-color: var(--button-primary); /* Primary blue */
+    color: white;
+    padding: 14px 25px; /* More padding for larger touch targets */
+    border: none;
+    border-radius: 8px; /* Softer rounded corners */
+    cursor: pointer;
+    font-size: 1.15em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
-.event-display h2 {
-    color: #ffda61; /* Yellow for event title */
-    margin-top: 0;
+button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 6px 15px var(--shadow-dark);
 }
 
-.event-display p {
-    font-size: 1.05em;
-    line-height: 1.5;
-    margin-bottom: 15px;
+button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px var(--shadow-dark);
 }
 
-#eventChoices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .game-container {
-        padding: 15px;
-        margin-top: 10px;
-    }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    .stats-display {
-        grid-template-columns: 1fr; /* Stack stats on small screens */
-    }
-}
-
-@media (max-width: 480px) {
-    .stats-display p {
-        font-size: 1em;
-    }
-
-    button {
-        padding: 10px 15px;
-        font-size: 1em;
-    }
-}
+button:disabled {
+    background-color: #555; /* Darker disabled color */
+    cursor: not-allowed;
+    box-shadow: none;

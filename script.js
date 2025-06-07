@@ -145,14 +145,12 @@ const EVENTS = [
 function updateStatsDisplay() {
     ageDisplay.textContent = player.age;
     lifeStageDisplay.textContent = player.lifeStage;
-    happinessStat.textContent = player.happiness;
-    healthStat.textContent = player.health;
-    smartsStat.textContent = player.smarts;
-    moneyStat.textContent = player.money;
-    charismaStat.textContent = player.charisma;
-
-    // Apply visual cues for stats (e.g., color changes) - More detailed in CSS now
-    // This is handled by CSS classes for .stat-value
+    // Apply Math.floor() for clean integers, strictly no decimals
+    happinessStat.textContent = Math.floor(player.happiness);
+    healthStat.textContent = Math.floor(player.health);
+    smartsStat.textContent = Math.floor(player.smarts);
+    moneyStat.textContent = Math.floor(player.money);
+    charismaStat.textContent = Math.floor(player.charisma);
 }
 
 function advanceTime(months = 1) {

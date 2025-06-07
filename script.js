@@ -91,7 +91,42 @@ function changeStat(statName, value, min = 0, max = 100) {
         console.warn(`Attempted to change non-existent stat: ${statName}`);
     }
 }
+/**
+ * Calculates the percentage chance of success for a given skill check.
+ * Assumes a d20 roll with stat bonus (stat/10).
+ * @param {string} statName - The name of the player stat (e.g., 'smarts').
+ * @param {number} difficulty - The target number to beat or meet.
+ * @returns {object} An object containing the percentage and a color string.
+ */
+function calculateSuccessChance(statName, difficulty) {
+    const statBonus = player[statName] || 0;
+    const effectiveStatBonus = Math.floor(statBonus / 10);
 
+    // Calculate the minimum roll needed on a d20
+    let requiredRoll = difficulty - effectiveStatBonus;
+
+    let successRolls = 0;
+    if (requiredRoll <= 1) {
+        successRolls = 20; // Any roll 1-20 succeeds (100%)
+    } else if (requiredRoll > 20) {
+        successRolls = 0; // No roll 1-20 can succeed (0%)
+    } else {
+        successRolls = 20 - requiredRoll + 1; // Rolls from requiredRoll to 20 succeed
+    }
+
+    const percentage = Math.round((successRolls / 20) * 100);
+
+    let color = 'red'; // Default to red (hard)
+    if (percentage >= 70) {
+        color = 'green'; // Easy
+    } else if (percentage >= 40) {
+        color = 'orange'; // Changed from yellow for better visibility on some backgrounds (medium)
+    } else {
+        color = 'red'; // Hard
+    }
+
+    return { percentage, color };
+}
 /**
  * Simulates a dice roll with a given number of sides, adds a stat bonus, and checks against a difficulty.
  * @param {number} sides - Number of sides on the die (e.g., 20 for a d20).
@@ -437,68 +472,77 @@ function triggerRandomEvent() {
     eventChoices.innerHTML = ''; // Clear previous choices
 
     if (event.choices) {
-        event.choices.forEach(choice => {
-            const choiceButton = document.createElement('button');
-            choiceButton.textContent = choice.text;
-            choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
+        // Inside function triggerRandomEvent() { ... }
+// Inside if (event.choices) { ... }
 
-            choiceButton.onclick = () => { // When this button is clicked
-                // Always hide the event display first, then re-show with results if it's a check
-                hideEventDisplay(); // Clear and hide previous event details immediately
+event.choices.forEach(choice => {
+    const choiceButton = document.createElement('button');
+    choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
 
-                if (choice.statCheck) {
-                    // This is a skill check choice
-                    const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty); // Roll a d20
-                    let outcomeMessage = '';
+    let choiceText = choice.text;
+    if (choice.statCheck) {
+        const { percentage, color } = calculateSuccessChance(choice.statCheck, choice.difficulty);
+        // Append the percentage and color it
+        choiceText += ` <span style="color: <span class="math-inline">\{color\}; font\-weight\: bold;"\>\(</span>{percentage}%)</span>`;
+    }
+    choiceButton.innerHTML = choiceText; // Use innerHTML to render the span correctly
 
-                    if (isSuccess) {
-                        if (choice.successEffects) {
-                            for (const stat in choice.successEffects) {
-                                changeStat(stat, choice.successEffects[stat]);
-                            }
-                        }
-                        outcomeMessage = choice.successText || "You succeeded!";
-                    } else {
-                        if (choice.failureEffects) {
-                            for (const stat in choice.failureEffects) {
-                                changeStat(stat, choice.failureEffects[stat]);
-                            }
-                        }
-                        outcomeMessage = choice.failureText || "You failed!";
+    choiceButton.onclick = () => { // When this button is clicked
+        // Always hide the event display first, then re-show with results if it's a check
+        hideEventDisplay(); // Clear and hide previous event details immediately
+
+        if (choice.statCheck) {
+            // This is a skill check choice
+            const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty); // Roll a d20
+            let outcomeMessage = '';
+
+            if (isSuccess) {
+                if (choice.successEffects) {
+                    for (const stat in choice.successEffects) {
+                        changeStat(stat, choice.successEffects[stat]);
                     }
-
-                    // --- CRUCIAL CHANGE: Update the event display with results ---
-                    eventTitle.textContent = `${event.title} - Result`; // Update title
-                    eventDescription.innerHTML = `
-                        ${event.description}
-                        <p><em>Your roll (${roll} + ${choice.statCheck} bonus ${statBonus} = ${totalScore}) ${isSuccess ? 'succeeded' : 'failed'} against difficulty ${choice.difficulty}.</em></p>
-                        <p>${outcomeMessage}</p>
-                    `;
-                    eventChoices.innerHTML = ''; // Clear choice buttons
-
-                    // Add a "Continue" button to dismiss the outcome
-                    const continueButton = document.createElement('button');
-                    continueButton.textContent = "Continue";
-                    continueButton.classList.add('event-continue-button');
-                    continueButton.onclick = hideEventDisplay; // Hide event after continue
-                    eventChoices.appendChild(continueButton);
-
-                    showEventDisplay(); // Re-show the event display with the updated content
-
-                } else {
-                    // This is a standard choice (no skill check)
-                    if (choice.effects) {
-                        for (const stat in choice.effects) {
-                            changeStat(stat, choice.effects[stat]);
-                        }
-                    }
-                    // For non-check choices, hide display and implicitly allow next turn
-                    // We already called hideEventDisplay() at the start of the onclick handler.
                 }
-                // IMPORTANT: We don't advance time here, that's for advanceTimeButton
-            };
-            eventChoices.appendChild(choiceButton);
-        });
+                outcomeMessage = choice.successText || "You succeeded!";
+            } else {
+                if (choice.failureEffects) {
+                    for (const stat in choice.failureEffects) {
+                        changeStat(stat, choice.failureEffects[stat]);
+                    }
+                }
+                outcomeMessage = choice.failureText || "You failed!";
+            }
+
+            // --- CRUCIAL CHANGE: SIMPLIFY Outcome Message ---
+            eventTitle.textContent = `${event.title} - Outcome`; // Update title
+            eventDescription.innerHTML = `
+                <p>${outcomeMessage}</p>
+                <p><em>(Original description: ${event.description})</em></p>
+            `; // Removed explicit roll numbers from display
+            eventChoices.innerHTML = ''; // Clear choice buttons
+
+            // Add a "Continue" button to dismiss the outcome
+            const continueButton = document.createElement('button');
+            continueButton.textContent = "Continue";
+            continueButton.classList.add('event-continue-button');
+            continueButton.onclick = hideEventDisplay; // Hide event after continue
+            eventChoices.appendChild(continueButton);
+
+            showEventDisplay(); // Re-show the event display with the updated content
+
+        } else {
+            // This is a standard choice (no skill check)
+            if (choice.effects) {
+                for (const stat in choice.effects) {
+                    changeStat(stat, choice.effects[stat]);
+                }
+            }
+            // For non-check choices, hide display and implicitly allow next turn
+            // We already called hideEventDisplay() at the start of the onclick handler.
+        }
+        // IMPORTANT: We don't advance time here, that's for advanceTimeButton
+    };
+    eventChoices.appendChild(choiceButton);
+});
     } else if (event.effects) {
         // If no choices, apply effects directly and add a "Continue" button
         for (const stat in event.effects) {

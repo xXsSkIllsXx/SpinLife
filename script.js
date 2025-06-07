@@ -113,6 +113,8 @@ function rollDice(sides, statName, difficulty) {
 
     return { roll, statBonus: Math.floor(statBonus / 10), totalScore, isSuccess };
 }
+
+/**
  * Shows the event display area.
  */
 function showEventDisplay() {
@@ -255,13 +257,13 @@ function checkGameOver() {
     }
     // Future: add conditions for low health, happiness, or specific events
     // if (player.health <= 0) {
-    //     endGame("Your health gave out...");
+    //    endGame("Your health gave out...");
     // }
     // if (player.happiness <= 0) {
-    //     endGame("You ran out of joy...");
+    //    endGame("You ran out of joy...");
     // }
     // if (player.money < -1000) { // Example: too much debt
-    //     endGame("You went bankrupt and couldn't recover...");
+    //    endGame("You went bankrupt and couldn't recover...");
     // }
 }
 
@@ -280,24 +282,25 @@ function endGame(cause) {
     // THIS IS THE CRUCIAL PART - CORRECT SYNTAX for ${variable}
     eventDescription.innerHTML = `
         <p>${cause}</p>
-<p>You reached the age of **${player.age}**.</p>
-<p>Final Stats:</p>
-<ul>
-<li>Happiness: ${player.happiness}</li>
-<li>Health: ${player.health}</li>
-<li>Smarts: ${player.smarts}</li>
-<li>Money: $${player.money}</li>
-</ul>
-<p>Click "New Life" to spin again!</p>
-`;
-// Add a "New Life" button to restart the game
-const newLifeButton = document.createElement('button');
-newLifeButton.textContent = "New Life";
-newLifeButton.classList.add('new-game-button'); // Add class for styling
-newLifeButton.onclick = initializeGame; // Restarts the game when clicked
-eventChoices.appendChild(newLifeButton);
-showEventDisplay(); // Show the end-of-life summary
+        <p>You reached the age of **${player.age}**.</p>
+        <p>Final Stats:</p>
+        <ul>
+            <li>Happiness: ${player.happiness}</li>
+            <li>Health: ${player.health}</li>
+            <li>Smarts: ${player.smarts}</li>
+            <li>Money: $${player.money}</li>
+        </ul>
+        <p>Click "New Life" to spin again!</p>
+    `;
+    // Add a "New Life" button to restart the game
+    const newLifeButton = document.createElement('button');
+    newLifeButton.textContent = "New Life";
+    newLifeButton.classList.add('new-game-button'); // Add class for styling
+    newLifeButton.onclick = initializeGame; // Restarts the game when clicked
+    eventChoices.appendChild(newLifeButton);
+    showEventDisplay(); // Show the end-of-life summary
 }
+
 // --- Event Data ---
 const gameEvents = [
     {
@@ -405,6 +408,7 @@ const gameEvents = [
         conditions: (player) => ['Young Adult', 'Adult', 'Middle Age'].includes(player.lifeStage) && player.money > 50 // Only if you have money
     }
 ];
+
 /**
  * Selects and displays a random eligible event.
  * This version is updated to filter events based on potential conditions.
@@ -433,57 +437,68 @@ function triggerRandomEvent() {
     eventChoices.innerHTML = ''; // Clear previous choices
 
     if (event.choices) {
-       // Inside function triggerRandomEvent() { ... }
-// Inside if (event.choices) { ... }
+        event.choices.forEach(choice => {
+            const choiceButton = document.createElement('button');
+            choiceButton.textContent = choice.text;
+            choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
 
-event.choices.forEach(choice => {
-    const choiceButton = document.createElement('button');
-    choiceButton.textContent = choice.text;
-    choiceButton.classList.add('event-choice-button'); // Add a class for potential styling
-    choiceButton.onclick = () => { // When this button is clicked
-        if (choice.statCheck) {
-            // This is a skill check choice
-            const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty); // Roll a d20
-            let outcomeMessage = '';
+            choiceButton.onclick = () => { // When this button is clicked
+                // Always hide the event display first, then re-show with results if it's a check
+                hideEventDisplay(); // Clear and hide previous event details immediately
 
-            if (isSuccess) {
-                if (choice.successEffects) {
-                    for (const stat in choice.successEffects) {
-                        changeStat(stat, choice.successEffects[stat]);
+                if (choice.statCheck) {
+                    // This is a skill check choice
+                    const { roll, statBonus, totalScore, isSuccess } = rollDice(20, choice.statCheck, choice.difficulty); // Roll a d20
+                    let outcomeMessage = '';
+
+                    if (isSuccess) {
+                        if (choice.successEffects) {
+                            for (const stat in choice.successEffects) {
+                                changeStat(stat, choice.successEffects[stat]);
+                            }
+                        }
+                        outcomeMessage = choice.successText || "You succeeded!";
+                    } else {
+                        if (choice.failureEffects) {
+                            for (const stat in choice.failureEffects) {
+                                changeStat(stat, choice.failureEffects[stat]);
+                            }
+                        }
+                        outcomeMessage = choice.failureText || "You failed!";
                     }
-                }
-                outcomeMessage = choice.successText || "You succeeded!";
-            } else {
-                if (choice.failureEffects) {
-                    for (const stat in choice.failureEffects) {
-                        changeStat(stat, choice.failureEffects[stat]);
+
+                    // --- CRUCIAL CHANGE: Update the event display with results ---
+                    eventTitle.textContent = `${event.title} - Result`; // Update title
+                    eventDescription.innerHTML = `
+                        ${event.description}
+                        <p><em>Your roll (${roll} + ${choice.statCheck} bonus ${statBonus} = ${totalScore}) ${isSuccess ? 'succeeded' : 'failed'} against difficulty ${choice.difficulty}.</em></p>
+                        <p>${outcomeMessage}</p>
+                    `;
+                    eventChoices.innerHTML = ''; // Clear choice buttons
+
+                    // Add a "Continue" button to dismiss the outcome
+                    const continueButton = document.createElement('button');
+                    continueButton.textContent = "Continue";
+                    continueButton.classList.add('event-continue-button');
+                    continueButton.onclick = hideEventDisplay; // Hide event after continue
+                    eventChoices.appendChild(continueButton);
+
+                    showEventDisplay(); // Re-show the event display with the updated content
+
+                } else {
+                    // This is a standard choice (no skill check)
+                    if (choice.effects) {
+                        for (const stat in choice.effects) {
+                            changeStat(stat, choice.effects[stat]);
+                        }
                     }
+                    // For non-check choices, hide display and implicitly allow next turn
+                    // We already called hideEventDisplay() at the start of the onclick handler.
                 }
-                outcomeMessage = choice.failureText || "You failed!";
-            }
-
-            // Display the outcome message as part of the event display
-            eventDescription.textContent = `<span class="math-inline">\{event\.description\}\\n\\nYour roll \(</span>{roll} + ${choice.statCheck} bonus ${statBonus} = ${totalScore}) ${isSuccess ? 'succeeded' : 'failed'} against difficulty <span class="math-inline">\{choice\.difficulty\}\.\\n\\n</span>{outcomeMessage}`;
-            eventChoices.innerHTML = ''; // Clear choice buttons
-            const continueButton = document.createElement('button');
-            continueButton.textContent = "Continue";
-            continueButton.classList.add('event-continue-button');
-            continueButton.onclick = hideEventDisplay; // Hide event after continue
-            eventChoices.appendChild(continueButton);
-
-        } else {
-            // This is a standard choice (no skill check)
-            if (choice.effects) {
-                for (const stat in choice.effects) {
-                    changeStat(stat, choice.effects[stat]);
-                }
-            }
-            hideEventDisplay(); // Hide event after choice
-        }
-        // IMPORTANT: We don't advance time here, that's for advanceTimeButton
-    };
-    eventChoices.appendChild(choiceButton);
-});
+                // IMPORTANT: We don't advance time here, that's for advanceTimeButton
+            };
+            eventChoices.appendChild(choiceButton);
+        });
     } else if (event.effects) {
         // If no choices, apply effects directly and add a "Continue" button
         for (const stat in event.effects) {

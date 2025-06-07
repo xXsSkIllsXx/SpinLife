@@ -254,28 +254,20 @@ function displayEvent(event) {
         button.classList.add('event-choice-button');
         button.textContent = choice.text;
 
-        // Optional: Add a consequence summary for decisions
-        let consequenceSummary = '';
-        if (choice.statChecks && choice.statChecks.length > 0) {
-            choice.statChecks.forEach(check => {
-                if (check.type === 'min' && player[check.stat] < check.threshold) {
-                    button.disabled = true; // Disable if player doesn't meet minimum
-                    button.textContent += ` (Requires ${check.stat} ${check.threshold})`;
-                    button.style.backgroundColor = 'var(--button-disabled-bg)';
-                    button.style.color = 'var(--button-disabled-text)';
-                    return; // Skip adding green/red text if disabled
-                }
-                // For check type, add indication of success/fail potential
-                if (check.type === 'check') {
-                     if (player[check.stat] >= check.threshold) {
-                         consequenceSummary += ` <span style="color:var(--accent-green);">(High Chance)</span>`;
-                     } else {
-                         consequenceSummary += ` <span style="color:var(--accent-red);">(Low Chance)</span>`;
-                     }
-                }
-            });
+       // Handle disabling and basic text for stat checks
+if (choice.statChecks && choice.statChecks.length > 0) {
+    choice.statChecks.forEach(check => {
+        if (check.type === 'min' && player[check.stat] < check.threshold) {
+            button.disabled = true; // Disable if player doesn't meet minimum
+            button.textContent += ` (Requires ${check.stat} ${check.threshold})`;
+            button.style.backgroundColor = 'var(--button-disabled-bg)';
+            button.style.color = 'var(--button-disabled-text)';
         }
-        button.innerHTML = choice.text + consequenceSummary;
+        // For 'check' type, we won't add text directly to the button for now to avoid complexity
+        // The consequence function itself will handle the result message
+    });
+}
+// The button's initial text is already set above
 
 
         button.addEventListener('click', () => {

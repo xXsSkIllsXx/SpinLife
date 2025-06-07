@@ -87,9 +87,16 @@ h2 {
     margin: 0;
     font-size: 1.15em; /* Slightly larger stat text */
     font-weight: 500; /* Medium font weight */
-    display: flex; /* For aligning span next to text */
-    justify-content: space-between; /* Pushes value to the right */
-    align-items: center;
+    display: flex; /* Enables flexbox */
+    justify-content: space-between; /* Pushes the first item (text) to the start and the second (value) to the end */
+    align-items: center; /* Vertically centers items if they have different heights */
+    padding: 5px 0; /* Add a little vertical padding for breathing room */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator line */
+}
+
+/* Remove border-bottom from the last stat for a cleaner look */
+.stats-display p:last-child {
+    border-bottom: none;
 }
 
 .stats-display span {

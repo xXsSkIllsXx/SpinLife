@@ -5,28 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpinLife - Your Life Simulation Game</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="game-container">
         <h1>SpinLife</h1>
 
-        <div class="stats-display">
-            <p>Age: <span id="ageDisplay">0</span></p>
-            <p>Life Stage: <span id="lifeStageDisplay">Birth</span></p>
-            <p>Happiness: <span id="happinessStat">100</span></p>
-            <p>Health: <span id="healthStat">100</span></p>
-            <p>Smarts: <span id="smartsStat">50</span></p>
-            <p>Money: $<span id="moneyStat">0</span></p>
-            <p>Charisma: <span id="charismaStat">50</span></p> </div>
-
-        <div class="action-buttons">
-            <button id="studyButton">Study</button>
-            <button id="workButton">Work</button>
-            <button id="socializeButton">Socialize</button>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-label">Age:</span>
+                <span id="ageDisplay" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Life Stage:</span>
+                <span id="lifeStageDisplay" class="stat-value">Birth</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Happiness:</span>
+                <span id="happinessStat" class="stat-value">100</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Health:</span>
+                <span id="healthStat" class="stat-value">100</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Smarts:</span>
+                <span id="smartsStat" class="stat-value">50</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Money:</span>
+                <span id="moneyStat" class="stat-value">$0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Charisma:</span>
+                <span id="charismaStat" class="stat-value">50</span>
+            </div>
         </div>
 
-        <button id="advanceTimeButton">Advance Time</button>
+        <div class="action-buttons">
+            <button id="studyButton" class="action-button">Study</button>
+            <button id="workButton" class="action-button">Work</button>
+            <button id="socializeButton" class="action-button">Socialize</button>
+        </div>
 
+        <button id="advanceTimeButton" class="main-button">Advance Time</button>
 
         <div class="event-display" style="display: none;">
             <h2 id="eventTitle"></h2>

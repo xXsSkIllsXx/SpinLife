@@ -46,13 +46,24 @@ body {
 
 .game-container {
     background-color: var(--card-bg-color);
-    border-radius: 30px; /* Very rounded corners for a soft look */
+    border-radius: 30px;
     box-shadow: var(--shadow-soft);
-    padding: 30px; /* Adjust padding for inner content */
-    width: 95%; /* Use almost full width */
-    max-width: 1200px; /* Allow it to grow even wider on large screens */
+    padding: 30px;
+    width: 95%;
+    max-width: 1200px;
     box-sizing: border-box;
-    text-align: center;
+    text-align: center; /* This centers inline-level content and text */
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 25px;
+
+    min-height: calc(100vh - 30px);
+    max-height: calc(100vh - 30px);
+
+    /* NEW: Center grid items horizontally within their cells */
+    justify-items: center; /* This will ensure h1 is centered in its grid cell */
+}
 
     /* Make game-container itself a grid to arrange title and wrapper */
     display: grid;

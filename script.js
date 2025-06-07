@@ -278,7 +278,7 @@ newLifeButton.onclick = initializeGame; // Restarts the game when clicked
 eventChoices.appendChild(newLifeButton);
 showEventDisplay(); // Show the end-of-life summary
 }
-// --- Event Data (Same as before, but note event conditions will be added later) ---
+// --- Event Data ---
 const gameEvents = [
     {
         id: 'earlyLifeEvent1',
@@ -287,48 +287,78 @@ const gameEvents = [
         choices: [
             { text: "Pet the cat.", effects: { happiness: 10 } },
             { text: "Ignore it.", effects: { happiness: -2 } }
-        ]
+        ],
+        // This event is suitable for any age, so we could omit conditions or make them broad.
+        // For now, it will apply to all ages since it has no specific conditions.
+        conditions: (player) => true // Always eligible
     },
     {
         id: 'earlyLifeEvent2',
         title: "Found a Coin!",
         description: "While walking, you spot a shiny coin on the ground.",
-        effects: { money: 10 }
+        effects: { money: 10 },
+        conditions: (player) => true // Always eligible
     },
     {
         id: 'healthEvent1',
         title: "Caught a Cold",
         description: "You've caught a minor cold. It's nothing serious, but you feel a bit under the weather.",
-        effects: { health: -10, happiness: -5 }
+        effects: { health: -10, happiness: -5 },
+        conditions: (player) => player.age >= 5 // Can only catch colds after infancy
     },
-    // More events will be added here later!
-    // EXAMPLE OF AGE-SPECIFIC EVENT (will be properly implemented in next phase)
     {
         id: 'childhoodDiscovery',
         title: "Exploring the Woods",
         description: "You ventured into the woods behind your house and found a hidden stream!",
         effects: { happiness: 15, smarts: 5 },
-        // conditions: (player) => player.lifeStage === 'Childhood' // This is how we'll add conditions later
+        conditions: (player) => player.lifeStage === 'Childhood' || player.lifeStage === 'Teenager' // Specific to childhood/teenager
+    },
+    {
+        id: 'schoolProject',
+        title: "Tough School Project",
+        description: "You have a major school project due soon that requires a lot of research.",
+        choices: [
+            { text: "Work hard on it.", effects: { smarts: 10, happiness: -8, health: -5 } },
+            { text: "Do the bare minimum.", effects: { smarts: -5, happiness: 5 } }
+        ],
+        conditions: (player) => ['Childhood', 'Teenager'].includes(player.lifeStage) // Relevant for school-going ages
+    },
+    {
+        id: 'firstJobOffer',
+        title: "First Job Offer!",
+        description: "A local shop is looking for part-time help. Are you interested?",
+        choices: [
+            { text: "Take the job.", effects: { money: 20, happiness: 5, health: -5 } },
+            { text: "Decline, focus on studies.", effects: { smarts: 10, happiness: 0 } }
+        ],
+        conditions: (player) => player.age >= 16 && !player.hasJob, // Example: only if old enough and no job yet (we'll add hasJob later)
+        // For now, this will trigger if age >= 16
+    },
+    {
+        id: 'adultResponsibility',
+        title: "Adulting is Hard",
+        description: "You're faced with unexpected expenses (e.g., a bill, minor repair).",
+        effects: { money: -30, happiness: -10 },
+        conditions: (player) => ['Young Adult', 'Adult', 'Middle Age'].includes(player.lifeStage) && player.money > 30 // Only if you have money
     }
 ];
-
 /**
  * Selects and displays a random eligible event.
- * This version is updated to filter events based on potential conditions (though conditions aren't fully applied yet).
+ * This version is updated to filter events based on potential conditions.
  * Prevents new events if the game is over.
  */
 function triggerRandomEvent() {
     if (isGameOver) return; // Don't trigger events if game is over
 
-    // Filter events based on conditions (e.g., age, stats) - for future use
-    // const eligibleEvents = gameEvents.filter(event => !event.conditions || event.conditions(player));
-    // For now, all events are eligible
-    const eligibleEvents = gameEvents;
-
+    // Filter events based on conditions (e.g., age, stats)
+    // An event is eligible if:
+    // 1. It doesn't have a 'conditions' property (meaning it's always eligible by default).
+    // 2. Or, if it has a 'conditions' property, that condition function returns true for the current player state.
+    const eligibleEvents = gameEvents.filter(event => !event.conditions || event.conditions(player));
 
     if (eligibleEvents.length === 0) {
-        console.log("No eligible events to trigger.");
-        hideEventDisplay(); // Ensure event display is hidden if no events
+        console.log("No eligible events to trigger for current conditions.");
+        hideEventDisplay(); // Ensure event display is hidden if no eligible events
         return;
     }
 
